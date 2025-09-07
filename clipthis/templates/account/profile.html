@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your Profile • ClipThis</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; }
+      header { display: flex; justify-content: space-between; align-items: center; }
+      .profile { display: flex; gap: 1rem; align-items: center; margin-top: 1.5rem; }
+      img.avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; }
+      .meta { color: #444; }
+      nav a { margin-left: 1rem; }
+      .card { max-width: 720px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Your Profile</h1>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/accounts/logout/">Logout</a>
+      </nav>
+    </header>
+
+    <div class="card">
+      {% with acct=request.user.socialaccount_set.first %}
+        {% if acct %}
+          {% with data=acct.extra_data %}
+            <div class="profile">
+              {% if data.picture %}
+                <img class="avatar" src="{{ data.picture }}" alt="Avatar" />
+              {% endif %}
+              <div>
+                <h2>{{ data.name|default:request.user.get_full_name|default:request.user.username }}</h2>
+                <div class="meta">
+                  <div>Provider: {{ acct.provider|title }}</div>
+                  <div>Email: {{ data.email|default:request.user.email }}</div>
+                </div>
+              </div>
+            </div>
+          {% endwith %}
+        {% else %}
+          <div class="profile">
+            <div>
+              <h2>{{ request.user.get_full_name|default:request.user.username }}</h2>
+              <div class="meta">Email: {{ request.user.email }}</div>
+            </div>
+          </div>
+        {% endif %}
+      {% endwith %}
+    </div>
+  </body>
+  </html>
+

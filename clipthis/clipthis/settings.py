@@ -241,12 +241,13 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SITE_ID = int(os.getenv('SITE_ID', '1'))
-LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', '/')
+LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', '/profile/')
 LOGOUT_REDIRECT_URL = os.getenv('LOGOUT_REDIRECT_URL', '/')
 
 ACCOUNT_EMAIL_VERIFICATION = os.getenv('ACCOUNT_EMAIL_VERIFICATION', 'none')
 ACCOUNT_AUTHENTICATION_METHOD = os.getenv('ACCOUNT_AUTHENTICATION_METHOD', 'username_email')
 ACCOUNT_EMAIL_REQUIRED = os.getenv('ACCOUNT_EMAIL_REQUIRED', 'false').lower() in {'1','true','yes','on'}
+ACCOUNT_LOGOUT_ON_GET = os.getenv('ACCOUNT_LOGOUT_ON_GET', 'true').lower() in {'1','true','yes','on'}
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
