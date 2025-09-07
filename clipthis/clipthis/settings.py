@@ -155,10 +155,10 @@ def _parse_database_url(url: str) -> dict:
         'PORT': str(parsed.port or ''),
     }
 
-    # Query params (e.g., sslmode=require)
+    # Map all query params into OPTIONS (e.g., sslmode, connect_timeout)
     query = parse_qs(parsed.query or '')
-    if 'sslmode' in query and query['sslmode']:
-        config['OPTIONS'] = {'sslmode': query['sslmode'][0]}
+    if query:
+        config['OPTIONS'] = {k: v[0] for k, v in query.items() if v}
     return config
 
 
