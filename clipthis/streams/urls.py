@@ -8,5 +8,6 @@ urlpatterns = [
     path('add/', views.StreamLinkCreateView.as_view(), name='add'),
     path('<int:pk>/edit/', views.StreamLinkUpdateView.as_view(), name='edit'),
     path('<int:pk>/toggle/', views.StreamLinkToggleActiveView.as_view(), name='toggle'),
+    # Public detail page for a stream
+    path('<int:pk>/', views.PublicStreamDetailView.as_view(), name='public_detail'),
 ]
-

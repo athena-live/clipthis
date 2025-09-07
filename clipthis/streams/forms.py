@@ -1,5 +1,5 @@
 from django import forms
-from .models import StreamLink
+from .models import StreamLink, Clip
 
 
 class StreamLinkForm(forms.ModelForm):
@@ -15,3 +15,11 @@ class StreamLinkForm(forms.ModelForm):
             'notes': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Notes for clippers (what to look for)...'}),
         }
 
+
+class ClipForm(forms.ModelForm):
+    class Meta:
+        model = Clip
+        fields = ['url', 'notes']
+        widgets = {
+            'notes': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Any context for this clip…'}),
+        }

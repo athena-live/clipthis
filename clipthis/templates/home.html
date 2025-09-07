@@ -40,6 +40,21 @@
           Manage your requests and links on <a class="cta" href="/streams/">My Streams</a>.
         </p>
       {% endif %}
+
+      <h2 style="margin-top:2rem;">Active Stream Requests</h2>
+      {% if active_links %}
+        <ul>
+          {% for link in active_links %}
+            <li>
+              <a href="{% url 'streams:public_detail' link.pk %}">{{ link.url }}</a>
+              <span class="muted">by {{ link.owner.get_full_name|default:link.owner.username }} · tip: ${{ link.tip_amount }}</span>
+              {% if link.notes %}<div class="muted">{{ link.notes }}</div>{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">No active requests yet.</p>
+      {% endif %}
     </main>
   </body>
-  </html>
+</html>

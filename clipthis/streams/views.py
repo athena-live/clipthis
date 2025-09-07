@@ -1,10 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, View
+from django.views.generic import ListView, CreateView, UpdateView, View, DetailView
 
-from .models import StreamLink
-from .forms import StreamLinkForm
+from .models import StreamLink, Clip
+from .forms import StreamLinkForm, ClipForm
 
 
 class MyStreamLinksView(LoginRequiredMixin, ListView):
@@ -45,3 +45,39 @@ class StreamLinkToggleActiveView(LoginRequiredMixin, View):
             link.save(update_fields=['active'])
         return HttpResponseRedirect(reverse_lazy('streams:list'))
 
+
+class PublicActiveLinksView(ListView):
+    model = StreamLink
+    template_name = 'home.html'
+    context_object_name = 'active_links'
+
+    def get_queryset(self):
+        return StreamLink.objects.filter(active=True).select_related('owner')
+
+
+class PublicStreamDetailView(DetailView):
+    model = StreamLink
+    template_name = 'streams/public_detail.html'
+    context_object_name = 'stream'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['clips'] = self.object.clips.select_related('submitter')
+        ctx['form'] = ClipForm()
+        return ctx
+
+    def post(self, request, *args, **kwargs):
+        # Allow authenticated users to submit a clip
+        self.object = self.get_object()
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect(reverse_lazy('account_login'))
+        form = ClipForm(request.POST)
+        if form.is_valid():
+            clip = form.save(commit=False)
+            clip.stream = self.object
+            clip.submitter = request.user
+            clip.save()
+            return HttpResponseRedirect(self.request.path)
+        ctx = self.get_context_data(object=self.object)
+        ctx['form'] = form
+        return self.render_to_response(ctx)
