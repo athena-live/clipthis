@@ -16,3 +16,6 @@ gunicorn>=21,<22
 
 # HTTP client
 requests>=2.31,<3
+
+# JWT support (import jwt)
+PyJWT>=2.8,<3
