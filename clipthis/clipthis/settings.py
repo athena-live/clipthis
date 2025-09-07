@@ -11,19 +11,44 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# Load environment variables from a local .env file if present
+def _load_dotenv(dotenv_path: Path) -> None:
+    try:
+        if dotenv_path.exists():
+            for raw in dotenv_path.read_text().splitlines():
+                line = raw.strip()
+                if not line or line.startswith('#') or '=' not in line:
+                    continue
+                key, value = line.split('=', 1)
+                key = key.strip()
+                value = value.strip().strip('"').strip("'")
+                os.environ.setdefault(key, value)
+    except Exception:
+        # Fail silently; env loading is best-effort
+        pass
+
+
+_load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b1ku+za8(lr5r%v1d41*lp31#)#sm^#!qvobva=-ne5x%f45)g'
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    'django-insecure-b1ku+za8(lr5r%v1d41*lp31#)#sm^#!qvobva=-ne5x%f45)g'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'true').lower() in {'1', 'true', 'yes', 'on'}
 
 ALLOWED_HOSTS = []
 
@@ -72,11 +97,75 @@ WSGI_APPLICATION = 'clipthis.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+def _parse_database_url(url: str) -> dict:
+    parsed = urlparse(url)
+    scheme = (parsed.scheme or '').lower()
+
+    engine_map = {
+        'sqlite': 'django.db.backends.sqlite3',
+        'postgres': 'django.db.backends.postgresql',
+        'postgresql': 'django.db.backends.postgresql',
+        'psql': 'django.db.backends.postgresql',
+        'mysql': 'django.db.backends.mysql',
+        'mariadb': 'django.db.backends.mysql',
     }
+
+    if scheme == 'sqlite':
+        # Handle sqlite paths (relative or absolute)
+        path = parsed.path or ''
+        if path in {'', '/', '/:memory:'}:
+            name = ':memory:'
+        else:
+            if path.startswith('/') and not path.startswith('//'):
+                # Absolute path like sqlite:////abs/path.db -> parsed.path == '/abs/path.db'
+                name = path
+            else:
+                # Relative path -> place under BASE_DIR
+                name = str((BASE_DIR / path.lstrip('/')).resolve())
+        return {
+            'ENGINE': engine_map['sqlite'],
+            'NAME': name,
+        }
+
+    engine = engine_map.get(scheme)
+    if not engine:
+        raise ValueError(f'Unsupported database scheme: {scheme!r}')
+
+    return {
+        'ENGINE': engine,
+        'NAME': (parsed.path.lstrip('/') or ''),
+        'USER': parsed.username or '',
+        'PASSWORD': parsed.password or '',
+        'HOST': parsed.hostname or '',
+        'PORT': str(parsed.port or ''),
+    }
+
+
+def _database_from_env() -> dict:
+    # Prefer DATABASE_URL if set
+    url = os.getenv('DATABASE_URL')
+    if url:
+        try:
+            return _parse_database_url(url)
+        except Exception:
+            pass  # Fall back to individual settings or default sqlite
+
+    # Individual settings (DB_ENGINE optional; defaults to sqlite3)
+    engine = os.getenv('DB_ENGINE', 'django.db.backends.sqlite3')
+    name = os.getenv('DB_NAME', str(BASE_DIR / 'db.sqlite3'))
+    return {
+        'ENGINE': engine,
+        'NAME': name,
+        'USER': os.getenv('DB_USER', ''),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', ''),
+    }
+
+
+DATABASES = {
+    'default': _database_from_env()
 }
 
 
