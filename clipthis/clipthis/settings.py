@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -132,7 +132,7 @@ def _parse_database_url(url: str) -> dict:
     if not engine:
         raise ValueError(f'Unsupported database scheme: {scheme!r}')
 
-    return {
+    config = {
         'ENGINE': engine,
         'NAME': (parsed.path.lstrip('/') or ''),
         'USER': parsed.username or '',
@@ -140,6 +140,12 @@ def _parse_database_url(url: str) -> dict:
         'HOST': parsed.hostname or '',
         'PORT': str(parsed.port or ''),
     }
+
+    # Query params (e.g., sslmode=require)
+    query = parse_qs(parsed.query or '')
+    if 'sslmode' in query and query['sslmode']:
+        config['OPTIONS'] = {'sslmode': query['sslmode'][0]}
+    return config
 
 
 def _database_from_env() -> dict:
@@ -154,7 +160,7 @@ def _database_from_env() -> dict:
     # Individual settings (DB_ENGINE optional; defaults to sqlite3)
     engine = os.getenv('DB_ENGINE', 'django.db.backends.sqlite3')
     name = os.getenv('DB_NAME', str(BASE_DIR / 'db.sqlite3'))
-    return {
+    config = {
         'ENGINE': engine,
         'NAME': name,
         'USER': os.getenv('DB_USER', ''),
@@ -162,6 +168,10 @@ def _database_from_env() -> dict:
         'HOST': os.getenv('DB_HOST', ''),
         'PORT': os.getenv('DB_PORT', ''),
     }
+    sslmode = os.getenv('DB_SSLMODE')
+    if sslmode:
+        config['OPTIONS'] = {'sslmode': sslmode}
+    return config
 
 
 DATABASES = {
