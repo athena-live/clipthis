@@ -35,7 +35,9 @@ def _load_dotenv(dotenv_path: Path) -> None:
         pass
 
 
+# Load .env from both the project root (BASE_DIR) and repository root (BASE_DIR.parent)
 _load_dotenv(BASE_DIR / '.env')
+_load_dotenv((BASE_DIR.parent / '.env'))
 
 
 # Quick-start development settings - unsuitable for production
