@@ -259,3 +259,8 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'access_type': 'online'},
     }
 }
+
+# Ensure correct absolute URLs behind a proxy/HTTPS
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
