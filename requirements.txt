@@ -8,5 +8,8 @@ Django==5.2
 # Using the prebuilt binary wheels avoids compilation issues.
 psycopg[binary]>=3.1,<4
 
+# Authentication (Google OAuth, signup/login flows)
+django-allauth>=0.51,<1
+
 # Production WSGI server
 gunicorn>=21,<22

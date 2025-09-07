@@ -1,0 +1,25 @@
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign up • ClipThis</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; }
+      .card { max-width: 420px; margin: 0 auto; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; }
+      .btn { display: inline-block; padding: .6rem 1rem; border-radius: 6px; text-decoration: none; }
+      .btn-google { background: #fff; color: #333; border: 1px solid #ccc; }
+      .stack > * { margin-top: .75rem; }
+    </style>
+  </head>
+  <body>
+    <div class="card stack">
+      <h1>Create your ClipThis account</h1>
+      <p>Sign up with Google to get started.</p>
+      <a class="btn btn-google" href="{% provider_login_url 'google' process='signup' %}">Sign up with Google</a>
+      <p>Already have an account? <a href="/accounts/login/">Sign in</a>.</p>
+    </div>
+  </body>
+  </html>
+
