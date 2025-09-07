@@ -49,6 +49,9 @@
               <a href="{% url 'streams:public_detail' link.pk %}">{{ link.url }}</a>
               <span class="muted">by {{ link.owner.get_full_name|default:link.owner.username }} · tip: ${{ link.tip_amount }}</span>
               {% if link.notes %}<div class="muted">{{ link.notes }}</div>{% endif %}
+              <div style="margin-top:.35rem;">
+                <a class="cta" href="{% url 'streams:public_detail' link.pk %}">View details</a>
+              </div>
             </li>
           {% endfor %}
         </ul>
