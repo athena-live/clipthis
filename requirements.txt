@@ -13,3 +13,6 @@ django-allauth>=0.51,<1
 
 # Production WSGI server
 gunicorn>=21,<22
+
+# HTTP client
+requests>=2.31,<3
