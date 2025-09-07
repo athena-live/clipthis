@@ -24,4 +24,5 @@ urlpatterns = [
     path('profile/', login_required(TemplateView.as_view(template_name='account/profile.html')), name='profile'),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
+    path('streams/', include('streams.urls', namespace='streams')),
 ]

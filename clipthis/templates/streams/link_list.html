@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Stream Links • ClipThis</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; }
+      header { display: flex; justify-content: space-between; align-items: center; }
+      table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+      th, td { text-align: left; padding: .5rem; border-bottom: 1px solid #eee; }
+      .muted { color: #666; font-size: .9rem; }
+      .badge { padding: .15rem .4rem; border-radius: .35rem; font-size: .8rem; border: 1px solid #ccc; }
+      .btn { display: inline-block; padding: .35rem .6rem; border: 1px solid #ccc; border-radius: .35rem; text-decoration: none; background: #fff; }
+      .actions a, .actions form { display: inline-block; margin-right: .4rem; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>My Stream Links</h1>
+      <nav>
+        <a class="btn" href="/">Home</a>
+        <a class="btn" href="{% url 'streams:add' %}">Add Link</a>
+        <a class="btn" href="/accounts/logout/">Logout</a>
+      </nav>
+    </header>
+
+    {% if links %}
+      <table>
+        <thead>
+          <tr>
+            <th>Link</th>
+            <th>Status</th>
+            <th>Tip</th>
+            <th>Notes</th>
+            <th>Updated</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for link in links %}
+            <tr>
+              <td>
+                <a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.url }}</a>
+              </td>
+              <td>
+                {% if link.active %}
+                  <span class="badge">Active</span>
+                {% else %}
+                  <span class="badge">Inactive</span>
+                {% endif %}
+              </td>
+              <td>${{ link.tip_amount }}</td>
+              <td class="muted">{{ link.notes|default:'—' }}</td>
+              <td class="muted">{{ link.updated_at|date:"Y-m-d H:i" }}</td>
+              <td class="actions">
+                <a class="btn" href="{% url 'streams:edit' link.pk %}">Edit</a>
+                <form method="post" action="{% url 'streams:toggle' link.pk %}">
+                  {% csrf_token %}
+                  <button class="btn" type="submit">{% if link.active %}Deactivate{% else %}Activate{% endif %}</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No links yet.</p>
+      <p><a class="btn" href="{% url 'streams:add' %}">Add your first link</a></p>
+    {% endif %}
+  </body>
+  </html>
+

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% if form.instance.pk %}Edit Link{% else %}Add Link{% endif %} • ClipThis</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; }
+      form { max-width: 640px; }
+      label { display: block; margin-top: .75rem; font-weight: 600; }
+      input[type="text"], input[type="url"], textarea, input[type="number"] { width: 100%; padding: .5rem; border: 1px solid #ccc; border-radius: .35rem; }
+      .row { margin-top: .75rem; }
+      .btn { display: inline-block; padding: .45rem .8rem; border: 1px solid #ccc; border-radius: .35rem; text-decoration: none; background: #fff; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>{% if form.instance.pk %}Edit Link{% else %}Add Link{% endif %}</h1>
+      <p><a class="btn" href="{% url 'streams:list' %}">Back to My Links</a></p>
+    </header>
+
+    <form method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div style="color:#b00;">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <label for="id_url">Stream URL</label>
+      {{ form.url }}
+      <div class="row" style="color:#666;font-size:.9rem;">Allowed: YouTube, Twitch, Kick</div>
+
+      <label for="id_active">Active</label>
+      {{ form.active }}
+
+      <label for="id_tip_amount">Tip Amount (USD)</label>
+      {{ form.tip_amount }}
+
+      <label for="id_notes">Notes</label>
+      {{ form.notes }}
+
+      <div class="row">
+        <button class="btn" type="submit">Save</button>
+      </div>
+    </form>
+  </body>
+  </html>
+
