@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, View, DetailView
 
 from .models import StreamLink, Clip
+from django.db.models import Count
 from .forms import StreamLinkForm, ClipForm
 
 
@@ -52,7 +53,12 @@ class PublicActiveLinksView(ListView):
     context_object_name = 'active_links'
 
     def get_queryset(self):
-        return StreamLink.objects.filter(active=True).select_related('owner')
+        return (
+            StreamLink.objects
+            .filter(active=True)
+            .select_related('owner')
+            .annotate(clip_count=Count('clips'))
+        )
 
 
 class PublicStreamDetailView(DetailView):
