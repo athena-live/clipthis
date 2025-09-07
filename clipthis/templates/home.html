@@ -28,11 +28,18 @@
       </nav>
     </header>
     <main>
-      <h2>Bring stream clippers and streamers together</h2>
-      <p>Discover, create, and share great stream highlights with your community.</p>
-      <p>
-        <a class="cta" href="/accounts/login/">Get started with Google</a>
-      </p>
+      {% if not request.user.is_authenticated %}
+        <h2>Bring stream clippers and streamers together</h2>
+        <p>Discover, create, and share great stream highlights with your community.</p>
+        <p>
+          <a class="cta" href="/accounts/login/">Get started with Google</a>
+        </p>
+      {% else %}
+        <h2>Welcome back</h2>
+        <p>
+          Manage your requests and links on <a class="cta" href="/streams/">My Streams</a>.
+        </p>
+      {% endif %}
     </main>
   </body>
   </html>
