@@ -83,7 +83,7 @@ class PublicActiveLinksView(ListView):
     def get_queryset(self):
         qs = (
             StreamLink.objects
-            .filter(active=True)
+            .filter(active=True, finished=False)
             .select_related('owner')
             .annotate(
                 clip_count=Count('clips', distinct=True),
