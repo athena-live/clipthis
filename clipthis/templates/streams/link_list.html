@@ -13,6 +13,7 @@
           <tr>
             <th>Link</th>
             <th>Status</th>
+            <th>Finished</th>
             <th>Tip</th>
             <th>Notes</th>
             <th>Updated</th>
@@ -42,6 +43,13 @@
                   <span class="badge text-bg-secondary"><i class="fa-regular fa-circle me-1"></i>Inactive</span>
                 {% endif %}
               </td>
+              <td>
+                {% if link.finished %}
+                  <span class="badge text-bg-primary"><i class="fa-solid fa-flag-checkered me-1"></i>Finished</span>
+                {% else %}
+                  <span class="badge text-bg-light text-dark"><i class="fa-regular fa-flag me-1"></i>Open</span>
+                {% endif %}
+              </td>
               <td>${{ link.tip_amount }}</td>
               <td class="text-muted">{{ link.notes|default:'—' }}</td>
               <td class="text-muted">{{ link.updated_at|date:"Y-m-d H:i" }}</td>
@@ -51,6 +59,10 @@
                   <form method="post" action="{% url 'streams:toggle' link.pk %}">
                     {% csrf_token %}
                     <button class="btn btn-sm btn-outline-secondary" type="submit">{% if link.active %}<i class="fa-solid fa-ban me-1"></i>Deactivate{% else %}<i class="fa-solid fa-check me-1"></i>Activate{% endif %}</button>
+                  </form>
+                  <form method="post" action="{% url 'streams:toggle_finished' link.pk %}">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-success" type="submit">{% if link.finished %}<i class="fa-regular fa-flag me-1"></i>Mark Open{% else %}<i class="fa-solid fa-flag-checkered me-1"></i>Mark Finished{% endif %}</button>
                   </form>
                 </div>
               </td>

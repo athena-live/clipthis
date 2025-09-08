@@ -23,6 +23,11 @@
       <label class="form-check-label" for="id_active">Active</label>
     </div>
 
+    <div class="form-check form-switch mb-3">
+      {{ form.finished }}
+      <label class="form-check-label" for="id_finished">Finished</label>
+    </div>
+
     <div class="mb-3">
       <label class="form-label" for="id_tip_amount">Tip Amount (USD)</label>
       {{ form.tip_amount }}

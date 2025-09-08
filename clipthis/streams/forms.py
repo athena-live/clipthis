@@ -8,6 +8,7 @@ class StreamLinkForm(forms.ModelForm):
         fields = [
             'url',
             'active',
+            'finished',
             'notes',
             'tip_amount',
         ]

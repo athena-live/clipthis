@@ -65,6 +65,15 @@ class StreamLinkToggleActiveView(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse_lazy('streams:list'))
 
 
+class StreamLinkToggleFinishedView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        link = StreamLink.objects.filter(owner=request.user, pk=pk).first()
+        if link:
+            link.finished = not link.finished
+            link.save(update_fields=['finished'])
+        return HttpResponseRedirect(reverse_lazy('streams:list'))
+
+
 class PublicActiveLinksView(ListView):
     model = StreamLink
     template_name = 'home.html'
