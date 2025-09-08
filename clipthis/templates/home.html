@@ -17,6 +17,56 @@
     </div>
   {% endif %}
 
+  <section class="mt-4">
+    <h2 class="h4"><i class="fa-solid fa-people-group me-1"></i>How ClipThis brings people together</h2>
+    <div class="row g-3 mt-1">
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="fw-semibold mb-1"><i class="fa-solid fa-video me-1"></i>Share your stream link</div>
+            <div class="text-body-secondary small">
+              Post a YouTube, Twitch, or Kick link with notes about what moments to capture.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="fw-semibold mb-1"><i class="fa-solid fa-scissors me-1"></i>Community submits clips</div>
+            <div class="text-body-secondary small">
+              Anyone signed in can add clip links under your stream. One stream can collect many highlights.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="fw-semibold mb-1"><i class="fa-solid fa-thumbs-up me-1"></i>Vote to surface the best</div>
+            <div class="text-body-secondary small">
+              Simple thumbs up/down on streams and clips helps the best content rise to the top.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="fw-semibold mb-1"><i class="fa-solid fa-hand-holding-dollar me-1"></i>Tip outside the app</div>
+            <div class="text-body-secondary small">
+              Support creators using payment handles on profiles (PayPal, Cash App, crypto, and more).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info mt-3 mb-0" role="alert">
+      <i class="fa-solid fa-rocket me-1"></i>More features are coming — notifications, leaderboards, better discovery, and more.
+    </div>
+  </section>
+
   {% if request.user.is_authenticated %}
     <h2 class="h4 mt-4"><i class="fa-solid fa-bolt me-1"></i>Active Stream Requests</h2>
     {% if active_links %}
