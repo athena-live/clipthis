@@ -33,6 +33,40 @@ class Clip(models.Model):
         return f"Clip for {self.stream_id} by {self.submitter_id}"
 
 
+class StreamRating(models.Model):
+    UP = 1
+    DOWN = -1
+    VALUE_CHOICES = (
+        (UP, 'Up'),
+        (DOWN, 'Down'),
+    )
+
+    stream = models.ForeignKey(StreamLink, on_delete=models.CASCADE, related_name='stream_ratings')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='stream_ratings')
+    value = models.SmallIntegerField(choices=VALUE_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = (('stream', 'user'),)
+
+
+class ClipRating(models.Model):
+    UP = 1
+    DOWN = -1
+    VALUE_CHOICES = (
+        (UP, 'Up'),
+        (DOWN, 'Down'),
+    )
+
+    clip = models.ForeignKey(Clip, on_delete=models.CASCADE, related_name='clip_ratings')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='clip_ratings')
+    value = models.SmallIntegerField(choices=VALUE_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = (('clip', 'user'),)
+
+
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
 

@@ -8,6 +8,22 @@
     </div>
     <div class="text-muted">by <a href="{% url 'streams:user_profile' stream.owner.id %}">{{ stream.owner.get_full_name|default:stream.owner.username }}</a> · tip: ${{ stream.tip_amount }}</div>
     {% if stream.notes %}<p class="mt-2">{{ stream.notes }}</p>{% endif %}
+    <div class="mt-2">
+      {% if request.user.is_authenticated %}
+        <form class="d-inline" method="post" action="{% url 'streams:rate_stream' stream.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="value" value="1" />
+          <button class="btn btn-sm btn-outline-success" type="submit">👍 {{ stream.up_count|default:0 }}</button>
+        </form>
+        <form class="d-inline" method="post" action="{% url 'streams:rate_stream' stream.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="value" value="-1" />
+          <button class="btn btn-sm btn-outline-danger" type="submit">👎 {{ stream.down_count|default:0 }}</button>
+        </form>
+      {% else %}
+        <span class="text-muted small">👍 {{ stream.up_count|default:0 }} • 👎 {{ stream.down_count|default:0 }}</span>
+      {% endif %}
+    </div>
   </div>
 
   <div class="row g-4">
@@ -17,9 +33,29 @@
         <ul class="list-group">
           {% for clip in clips %}
             <li class="list-group-item">
-              <div><a href="{{ clip.url }}" target="_blank" rel="noopener">{{ clip.url }}</a></div>
-              <div class="text-muted small">by <a href="{% url 'streams:user_profile' clip.submitter.id %}">{{ clip.submitter.get_full_name|default:clip.submitter.username }}</a> • {{ clip.created_at|date:"Y-m-d H:i" }}</div>
-              {% if clip.notes %}<div class="text-muted small mt-1">{{ clip.notes }}</div>{% endif %}
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div><a href="{{ clip.url }}" target="_blank" rel="noopener">{{ clip.url }}</a></div>
+                  <div class="text-muted small">by <a href="{% url 'streams:user_profile' clip.submitter.id %}">{{ clip.submitter.get_full_name|default:clip.submitter.username }}</a> • {{ clip.created_at|date:"Y-m-d H:i" }}</div>
+                  {% if clip.notes %}<div class="text-muted small mt-1">{{ clip.notes }}</div>{% endif %}
+                </div>
+                <div>
+                  {% if request.user.is_authenticated %}
+                    <form class="d-inline" method="post" action="{% url 'streams:rate_clip' clip.pk %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="value" value="1" />
+                      <button class="btn btn-sm btn-outline-success" type="submit">👍 {{ clip.up_count|default:0 }}</button>
+                    </form>
+                    <form class="d-inline" method="post" action="{% url 'streams:rate_clip' clip.pk %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="value" value="-1" />
+                      <button class="btn btn-sm btn-outline-danger" type="submit">👎 {{ clip.down_count|default:0 }}</button>
+                    </form>
+                  {% else %}
+                    <span class="text-muted small">👍 {{ clip.up_count|default:0 }} • 👎 {{ clip.down_count|default:0 }}</span>
+                  {% endif %}
+                </div>
+              </div>
             </li>
           {% endfor %}
         </ul>

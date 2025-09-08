@@ -4,8 +4,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, View, DetailView
 from django.shortcuts import get_object_or_404, render
 
-from .models import StreamLink, Clip, Profile
-from django.db.models import Count
+from .models import StreamLink, Clip, Profile, StreamRating, ClipRating
+from django.db.models import Count, Q
 from .forms import StreamLinkForm, ClipForm
 
 
@@ -58,7 +58,11 @@ class PublicActiveLinksView(ListView):
             StreamLink.objects
             .filter(active=True)
             .select_related('owner')
-            .annotate(clip_count=Count('clips'))
+            .annotate(
+                clip_count=Count('clips'),
+                up_count=Count('stream_ratings', filter=Q(stream_ratings__value=1)),
+                down_count=Count('stream_ratings', filter=Q(stream_ratings__value=-1)),
+            )
         )
 
 
@@ -67,10 +71,35 @@ class PublicStreamDetailView(DetailView):
     template_name = 'streams/public_detail.html'
     context_object_name = 'stream'
 
+    def get_queryset(self):
+        # annotate up/down counts for the stream
+        return (
+            super().get_queryset()
+            .annotate(
+                up_count=Count('stream_ratings', filter=Q(stream_ratings__value=1)),
+                down_count=Count('stream_ratings', filter=Q(stream_ratings__value=-1)),
+            )
+        )
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['clips'] = self.object.clips.select_related('submitter')
+        ctx['clips'] = (
+            self.object.clips
+            .select_related('submitter')
+            .annotate(
+                up_count=Count('clip_ratings', filter=Q(clip_ratings__value=1)),
+                down_count=Count('clip_ratings', filter=Q(clip_ratings__value=-1)),
+            )
+        )
         ctx['form'] = ClipForm()
+        if self.request.user.is_authenticated:
+            sr = StreamRating.objects.filter(stream=self.object, user=self.request.user).first()
+            ctx['my_stream_vote'] = sr.value if sr else 0
+            # Build dict of clip_id -> vote value
+            user_votes = {
+                cr.clip_id: cr.value for cr in ClipRating.objects.filter(user=self.request.user, clip__stream=self.object)
+            }
+            ctx['my_clip_votes'] = user_votes
         return ctx
 
     def post(self, request, *args, **kwargs):
@@ -127,3 +156,41 @@ class PublicProfileView(View):
     def model_user():
         from django.contrib.auth import get_user_model
         return get_user_model()
+
+
+class RateStreamView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        stream = get_object_or_404(StreamLink, pk=pk)
+        try:
+            value = int(request.POST.get('value'))
+        except (TypeError, ValueError):
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        if value not in (1, -1):
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        obj, created = StreamRating.objects.get_or_create(stream=stream, user=request.user, defaults={'value': value})
+        if not created:
+            if obj.value == value:
+                obj.delete()  # toggle off
+            else:
+                obj.value = value
+                obj.save(update_fields=['value'])
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+class RateClipView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        clip = get_object_or_404(Clip, pk=pk)
+        try:
+            value = int(request.POST.get('value'))
+        except (TypeError, ValueError):
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        if value not in (1, -1):
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        obj, created = ClipRating.objects.get_or_create(clip=clip, user=request.user, defaults={'value': value})
+        if not created:
+            if obj.value == value:
+                obj.delete()
+            else:
+                obj.value = value
+                obj.save(update_fields=['value'])
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

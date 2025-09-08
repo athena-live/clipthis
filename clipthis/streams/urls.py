@@ -15,4 +15,7 @@ urlpatterns = [
     path('clips/<int:pk>/edit/', views.ClipUpdateView.as_view(), name='clip_edit'),
     # Public user profile
     path('user/<int:user_id>/', views.PublicProfileView.as_view(), name='user_profile'),
+    # Ratings
+    path('rate/stream/<int:pk>/', views.RateStreamView.as_view(), name='rate_stream'),
+    path('rate/clip/<int:pk>/', views.RateClipView.as_view(), name='rate_clip'),
 ]
