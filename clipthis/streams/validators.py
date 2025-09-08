@@ -36,3 +36,20 @@ def validate_no_links(value: str) -> None:
     lower = str(value).strip().lower()
     if lower.startswith(('http://', 'https://', 'www.')) or '://' in lower:
         raise ValidationError('Links are not allowed here; use plain handles or addresses.')
+
+
+def validate_pumpfun_url(value: str) -> None:
+    """Ensure URL points to pump.fun."""
+    if not value:
+        return
+    try:
+        parsed = urlparse(value)
+    except Exception as exc:
+        raise ValidationError('Invalid URL.') from exc
+    if parsed.scheme not in ('http', 'https'):
+        raise ValidationError('URL must start with http or https.')
+    host = (parsed.hostname or '').lower()
+    if not host:
+        raise ValidationError('URL must include a hostname.')
+    if not (host == 'pump.fun' or host.endswith('.pump.fun')):
+        raise ValidationError('Only pump.fun URLs are allowed in this field.')
