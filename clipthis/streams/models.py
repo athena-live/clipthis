@@ -114,5 +114,36 @@ class Profile(models.Model):
         }
         return limits.get(plan or Profile.PLAN_FREE, 50)
 
+
+class BillingTransaction(models.Model):
+    PLAN_CHOICES = (
+        ('plus', 'Plus'),
+        ('premium', 'Premium'),
+    )
+
+    STATUS_PENDING = 'pending'
+    STATUS_PAID = 'paid'
+    STATUS_CANCELED = 'canceled'
+    STATUS_FAILED = 'failed'
+    STATUS_CHOICES = (
+        (STATUS_PENDING, 'Pending'),
+        (STATUS_PAID, 'Paid'),
+        (STATUS_CANCELED, 'Canceled'),
+        (STATUS_FAILED, 'Failed'),
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='billing_transactions')
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES)
+    amount_cents = models.IntegerField()
+    currency = models.CharField(max_length=10, default='usd')
+    stripe_session_id = models.CharField(max_length=255, blank=True, db_index=True)
+    stripe_payment_intent = models.CharField(max_length=255, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.user_id} {self.plan} {self.status}"
+
     def __str__(self) -> str:
         return f"Profile for {self.user_id}"

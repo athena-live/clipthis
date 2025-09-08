@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views import View
 
 from streams.forms import ProfileForm
-from streams.models import Profile
+from streams.models import Profile, BillingTransaction
 from django.conf import settings
 
 try:
@@ -86,6 +86,14 @@ class SelectPlanView(LoginRequiredMixin, View):
             if not amount:
                 return redirect('pricing')
             try:
+                # Record pending transaction
+                txn = BillingTransaction.objects.create(
+                    user=request.user,
+                    plan=plan,
+                    amount_cents=amount,
+                    currency='usd',
+                    status=BillingTransaction.STATUS_PENDING,
+                )
                 session = stripe.checkout.Session.create(
                     mode='payment',
                     line_items=[{
@@ -96,10 +104,14 @@ class SelectPlanView(LoginRequiredMixin, View):
                         },
                         'quantity': 1,
                     }],
-                    success_url=request.build_absolute_uri('/billing/success/?plan=' + plan),
+                    success_url=request.build_absolute_uri('/billing/success/?plan=' + plan + '&session_id={CHECKOUT_SESSION_ID}'),
                     cancel_url=request.build_absolute_uri('/billing/cancel/'),
                     customer_email=request.user.email or None,
+                    metadata={'user_id': str(request.user.id), 'plan': plan, 'txn_id': str(txn.id)},
                 )
+                # Save session id on txn
+                txn.stripe_session_id = session.id
+                txn.save(update_fields=['stripe_session_id'])
                 return redirect(session.url)
             except Exception:
                 # Fallback: set plan directly if Stripe fails
@@ -115,10 +127,28 @@ class SelectPlanView(LoginRequiredMixin, View):
 class BillingSuccessView(LoginRequiredMixin, View):
     def get(self, request):
         plan = request.GET.get('plan')
-        if plan in ('free', 'plus', 'premium'):
-            profile, _ = Profile.objects.get_or_create(user=request.user)
-            profile.plan = plan
-            profile.save(update_fields=['plan'])
+        session_id = request.GET.get('session_id')
+        if plan in ('plus', 'premium') and stripe and getattr(settings, 'STRIPE_SECRET_KEY', '') and session_id:
+            try:
+                stripe.api_key = settings.STRIPE_SECRET_KEY
+                session = stripe.checkout.Session.retrieve(session_id)
+                payment_intent = session.get('payment_intent')
+                payment_status = session.get('payment_status')
+                # Update transaction
+                txn = BillingTransaction.objects.filter(user=request.user, stripe_session_id=session_id).first()
+                if txn:
+                    txn.status = BillingTransaction.STATUS_PAID if payment_status == 'paid' else BillingTransaction.STATUS_FAILED
+                    txn.stripe_payment_intent = payment_intent or ''
+                    txn.save(update_fields=['status', 'stripe_payment_intent'])
+                # Apply plan if paid
+                if payment_status == 'paid':
+                    profile, _ = Profile.objects.get_or_create(user=request.user)
+                    profile.plan = plan
+                    profile.save(update_fields=['plan'])
+                    return redirect('profile')
+            except Exception:
+                pass
+        # Default: show success page; user can navigate to profile
         return render(request, 'billing/success.html', {'plan': plan})
 
 
