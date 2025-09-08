@@ -251,6 +251,7 @@ ACCOUNT_AUTHENTICATION_METHOD = os.getenv('ACCOUNT_AUTHENTICATION_METHOD', 'user
 ACCOUNT_EMAIL_REQUIRED = os.getenv('ACCOUNT_EMAIL_REQUIRED', 'false').lower() in {'1','true','yes','on'}
 ACCOUNT_LOGOUT_ON_GET = os.getenv('ACCOUNT_LOGOUT_ON_GET', 'true').lower() in {'1','true','yes','on'}
 ACCOUNT_SIGNUP_REDIRECT_URL = os.getenv('ACCOUNT_SIGNUP_REDIRECT_URL', '/pricing/')
+SOCIALACCOUNT_LOGIN_ON_GET = os.getenv('SOCIALACCOUNT_LOGIN_ON_GET', 'true').lower() in {'1','true','yes','on'}
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -272,3 +273,14 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 # Stripe
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY', '')
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
+
+# Cookie/domain settings to keep sessions stable across apex and www
+COOKIE_DOMAIN = os.getenv('COOKIE_DOMAIN', '')
+if COOKIE_DOMAIN:
+    SESSION_COOKIE_DOMAIN = COOKIE_DOMAIN
+    CSRF_COOKIE_DOMAIN = COOKIE_DOMAIN
+
+# Secure cookies in production
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
