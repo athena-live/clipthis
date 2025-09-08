@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
-{% block title %}Clip This{% endblock %}
+{% block title %}Clip This — Turn Live Moments into Shareable Highlights{% endblock %}
 {% block content %}
   {% if not request.user.is_authenticated %}
-    <div class="p-4 mb-4 rounded-3 border bg-body-tertiary">
+    <section class="p-4 p-md-5 mb-4 rounded-3 border" style="background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(6,182,212,.08));">
       <div class="container-fluid py-2">
-        <h2 class="display-6 text-body">Bring stream clippers and streamers together</h2>
-        <p class="lead text-body-secondary">Discover, create, and share great stream highlights with your community.</p>
-        <a class="btn btn-primary" href="/accounts/login/">Get started with Google</a>
-        <p class="mt-3 mb-0 text-body-secondary">Have questions? Read our <a href="/faq/">Q&amp;A / FAQ</a> for clear answers.</p>
+        <h1 class="display-6 fw-bold mb-2 text-body">Turn live moments into shareable highlights</h1>
+        <p class="lead text-body-secondary mb-3">Clip This connects streamers with the community that loves them — crowdsource the best moments, vote them up, and showcase highlights together.</p>
+        <div class="d-flex flex-wrap gap-2 mb-2">
+          <a class="btn btn-primary" href="/accounts/login/"><i class="fa-solid fa-bolt me-1"></i> Get started with Google</a>
+          <a class="btn btn-outline-secondary" href="/faq/"><i class="fa-solid fa-circle-question me-1"></i> Learn how it works</a>
+        </div>
+        <div class="text-body-secondary small">Free to start • No credit card • Keep tips outside the app</div>
       </div>
-    </div>
+    </section>
   {% else %}
     <div class="alert alert-success" role="alert">
       <i class="fa-solid fa-handshake me-1"></i>Welcome back. Manage your requests on <a href="/streams/" class="alert-link">My Streams</a>.
@@ -19,52 +22,36 @@
 
   {% if not request.user.is_authenticated %}
   <section class="mt-4">
-    <h2 class="h4"><i class="fa-solid fa-people-group me-1"></i>How Clip This brings people together</h2>
-    <div class="row g-3 mt-1">
-      <div class="col-12 col-md-6 col-lg-3">
+    <div class="row g-3">
+      <div class="col-12 col-lg-7">
         <div class="card h-100">
           <div class="card-body">
-            <div class="fw-semibold mb-1"><i class="fa-solid fa-video me-1"></i>Share your stream link</div>
-            <div class="text-body-secondary small">
-              Post a YouTube, Twitch, or Kick link with notes about what moments to capture.
-            </div>
+            <h2 class="h5 mb-3"><i class="fa-solid fa-route me-1"></i>How it works</h2>
+            <ol class="text-body-secondary small m-0" style="line-height:1.7;">
+              <li><strong>Post your stream</strong> — Add a YouTube, Twitch, Kick, or pump.fun link with notes and a tip amount.</li>
+              <li><strong>Clippers contribute</strong> — Your community submits clip links beneath your stream request.</li>
+              <li><strong>Vote together</strong> — Thumbs up/down bubbles up the best highlights.</li>
+              <li><strong>Tip outside the app</strong> — PayPal, Cash App, crypto, and more via profile handles.</li>
+            </ol>
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-6 col-lg-3">
+      <div class="col-12 col-lg-5">
         <div class="card h-100">
           <div class="card-body">
-            <div class="fw-semibold mb-1"><i class="fa-solid fa-scissors me-1"></i>Community submits clips</div>
-            <div class="text-body-secondary small">
-              Anyone signed in can add clip links under your stream. One stream can collect many highlights.
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-6 col-lg-3">
-        <div class="card h-100">
-          <div class="card-body">
-            <div class="fw-semibold mb-1"><i class="fa-solid fa-thumbs-up me-1"></i>Vote to surface the best</div>
-            <div class="text-body-secondary small">
-              Simple thumbs up/down on streams and clips helps the best content rise to the top.
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-6 col-lg-3">
-        <div class="card h-100">
-          <div class="card-body">
-            <div class="fw-semibold mb-1"><i class="fa-solid fa-hand-holding-dollar me-1"></i>Tip outside the app</div>
-            <div class="text-body-secondary small">
-              Support creators using payment handles on profiles (PayPal, Cash App, crypto, and more).
-            </div>
+            <h2 class="h5 mb-3"><i class="fa-solid fa-star me-1"></i>Why creators use Clip This</h2>
+            <ul class="text-body-secondary small m-0" style="line-height:1.7;">
+              <li><strong>More eyes, better clips</strong> — crowdsource standout moments.</li>
+              <li><strong>Own your audience</strong> — tips handled outside the app.</li>
+              <li><strong>Fast to start</strong> — sign in with Google, post in seconds.</li>
+            </ul>
           </div>
         </div>
       </div>
     </div>
 
     <div class="alert alert-info mt-3 mb-0" role="alert">
-      <i class="fa-solid fa-rocket me-1"></i>More features are coming — notifications, leaderboards, better discovery, and more.
+      <i class="fa-solid fa-rocket me-1"></i>More is coming soon: notifications, leaderboards, smarter discovery, and team workflows.
     </div>
   </section>
   {% endif %}
