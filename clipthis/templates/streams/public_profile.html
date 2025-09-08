@@ -8,6 +8,25 @@
           <h1 class="h4 mb-3">{{ user_obj.get_full_name|default:user_obj.username }}</h1>
           <div class="text-muted mb-3">{{ user_obj.email }}</div>
 
+          <h2 class="h5">Analytics</h2>
+          <div class="row gy-2 gx-3 mt-1 mb-3">
+            <div class="col-6 col-md-3"><strong>Streams</strong>: {{ analytics.streams_created }}</div>
+            <div class="col-6 col-md-3"><strong>Clips</strong>: {{ analytics.clips_created }}</div>
+            <div class="col-12"></div>
+            <div class="col-md-6">
+              <div class="fw-semibold mb-1">Votes cast</div>
+              <div class="text-muted small">Stream 👍 {{ analytics.cast.streams_up }} • 👎 {{ analytics.cast.streams_down }}</div>
+              <div class="text-muted small">Clip 👍 {{ analytics.cast.clips_up }} • 👎 {{ analytics.cast.clips_down }}</div>
+              <div class="text-muted small">Total: {{ analytics.cast.total }}</div>
+            </div>
+            <div class="col-md-6">
+              <div class="fw-semibold mb-1">Votes received</div>
+              <div class="text-muted small">On streams 👍 {{ analytics.received.streams_up }} • 👎 {{ analytics.received.streams_down }}</div>
+              <div class="text-muted small">On clips 👍 {{ analytics.received.clips_up }} • 👎 {{ analytics.received.clips_down }}</div>
+              <div class="text-muted small">Total: {{ analytics.received.total }}</div>
+            </div>
+          </div>
+
           <h2 class="h5">Payment Information</h2>
           <div class="row g-3 mt-1">
             {% if profile.paypal %}

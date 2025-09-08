@@ -147,9 +147,45 @@ class PublicProfileView(View):
     def get(self, request, user_id: int):
         user = get_object_or_404(self.model_user(), pk=user_id)
         profile, _ = Profile.objects.get_or_create(user=user)
+        # Analytics
+        streams_created = StreamLink.objects.filter(owner=user).count()
+        clips_created = Clip.objects.filter(submitter=user).count()
+
+        # Votes this user cast
+        cast_streams_up = StreamRating.objects.filter(user=user, value=1).count()
+        cast_streams_down = StreamRating.objects.filter(user=user, value=-1).count()
+        cast_clips_up = ClipRating.objects.filter(user=user, value=1).count()
+        cast_clips_down = ClipRating.objects.filter(user=user, value=-1).count()
+
+        # Votes received on this user's content
+        recv_streams_up = StreamRating.objects.filter(stream__owner=user, value=1).count()
+        recv_streams_down = StreamRating.objects.filter(stream__owner=user, value=-1).count()
+        recv_clips_up = ClipRating.objects.filter(clip__submitter=user, value=1).count()
+        recv_clips_down = ClipRating.objects.filter(clip__submitter=user, value=-1).count()
+
+        analytics = {
+            'streams_created': streams_created,
+            'clips_created': clips_created,
+            'cast': {
+                'streams_up': cast_streams_up,
+                'streams_down': cast_streams_down,
+                'clips_up': cast_clips_up,
+                'clips_down': cast_clips_down,
+                'total': cast_streams_up + cast_streams_down + cast_clips_up + cast_clips_down,
+            },
+            'received': {
+                'streams_up': recv_streams_up,
+                'streams_down': recv_streams_down,
+                'clips_up': recv_clips_up,
+                'clips_down': recv_clips_down,
+                'total': recv_streams_up + recv_streams_down + recv_clips_up + recv_clips_down,
+            },
+        }
+
         return render(request, self.template_name, {
             'user_obj': user,
             'profile': profile,
+            'analytics': analytics,
         })
 
     @staticmethod
