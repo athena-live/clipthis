@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views import View
 
 from streams.forms import ProfileForm
-from streams.models import Profile, BillingTransaction
+from streams.models import Profile, BillingTransaction, StreamLink
 from django.conf import settings
 from django.contrib import messages
 
@@ -27,7 +27,19 @@ class ProfileView(LoginRequiredMixin, View):
         profile, _ = Profile.objects.get_or_create(user=user)
         user_form = self._user_form(instance=user)
         profile_form = ProfileForm(instance=profile)
-        return render(request, self.template_name, {"user_form": user_form, "profile_form": profile_form})
+        used = StreamLink.objects.filter(owner=user).count()
+        limit = Profile.plan_limit(profile.plan)
+        return render(
+            request,
+            self.template_name,
+            {
+                "user_form": user_form,
+                "profile_form": profile_form,
+                "profile": profile,
+                "plan_limit": limit,
+                "plan_used": used,
+            },
+        )
 
     def post(self, request):
         user = request.user
@@ -38,7 +50,19 @@ class ProfileView(LoginRequiredMixin, View):
             user_form.save()
             profile_form.save()
             return redirect(self.success_url)
-        return render(request, self.template_name, {"user_form": user_form, "profile_form": profile_form})
+        used = StreamLink.objects.filter(owner=user).count()
+        limit = Profile.plan_limit(profile.plan)
+        return render(
+            request,
+            self.template_name,
+            {
+                "user_form": user_form,
+                "profile_form": profile_form,
+                "profile": profile,
+                "plan_limit": limit,
+                "plan_used": used,
+            },
+        )
 
     def _user_form(self, *args, **kwargs):
         # Simple dynamic ModelForm for first/last name only with Bootstrap widgets
