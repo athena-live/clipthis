@@ -16,6 +16,15 @@
     {% block extra_head %}{% endblock %}
   </head>
   <body class="d-flex flex-column min-vh-100">
+    {% if google_tag_id %}
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_tag_id }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);} gtag('js', new Date());
+      gtag('config', '{{ google_tag_id }}');
+    </script>
+    {% endif %}
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
         <a class="navbar-brand" href="/"><i class="fa-solid fa-video me-1"></i>Clip This</a>

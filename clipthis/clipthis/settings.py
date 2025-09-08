@@ -300,3 +300,6 @@ try:
     YOUTUBE_CACHE_HOURS = int(os.getenv('YOUTUBE_CACHE_HOURS', '24'))
 except Exception:
     YOUTUBE_CACHE_HOURS = 24
+
+# Google Analytics (gtag)
+GOOGLE_TAG_ID = os.getenv('GOOGLE_TAG_ID', '')

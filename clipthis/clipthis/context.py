@@ -1,6 +1,7 @@
 from typing import Dict
 from django.http import HttpRequest
 from streams.models import Profile
+from django.conf import settings
 
 
 def theme(request: HttpRequest) -> Dict[str, str]:
@@ -11,8 +12,7 @@ def theme(request: HttpRequest) -> Dict[str, str]:
     try:
         if request.user.is_authenticated:
             profile, _ = Profile.objects.get_or_create(user=request.user)
-            return {"theme": profile.theme}
+            return {"theme": profile.theme, "google_tag_id": getattr(settings, 'GOOGLE_TAG_ID', '')}
     except Exception:
         pass
-    return {"theme": "dark"}
-
+    return {"theme": "dark", "google_tag_id": getattr(settings, 'GOOGLE_TAG_ID', '')}
