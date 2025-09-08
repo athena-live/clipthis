@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block title %}ClipThis — Q&A / FAQ{% endblock %}
+{% block extra_head %}
+  <meta name="description" content="Answers to common questions about ClipThis: what it is, how to add stream links and clips, account and plans, payments, privacy, and voting." />
+  <meta name="robots" content="index,follow" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is ClipThis?",
+        "acceptedAnswer": {"@type": "Answer", "text": "ClipThis connects streamers with community clippers. Streamers post active stream links with notes and tip amounts. Any signed-in user can submit clip links for those streams."}
+      },
+      {
+        "@type": "Question",
+        "name": "How do I sign in?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Use Sign in with Google from the Login or Signup page. Your Google account is used for authentication only."}
+      },
+      {
+        "@type": "Question",
+        "name": "How do stream links and clip links work?",
+        "acceptedAnswer": {"@type": "Answer", "text": "A stream link is a URL to a live stream or VOD from allowed platforms (YouTube, Twitch, Kick). A clip link is a user-submitted highlight URL associated to a stream link. Multiple clips can be attached to one stream."}
+      },
+      {
+        "@type": "Question",
+        "name": "Which platforms are supported?",
+        "acceptedAnswer": {"@type": "Answer", "text": "YouTube (youtube.com, youtu.be), Twitch (twitch.tv), and Kick (kick.com)."}
+      },
+      {
+        "@type": "Question",
+        "name": "What plans are available and what are the limits?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Free: up to 50 stream links and 100 active votes. Plus ($9.99): up to 200 stream links and 1000 active votes. Premium ($14.99): up to 500 stream links and 5000 active votes."}
+      },
+      {
+        "@type": "Question",
+        "name": "How do I upgrade or downgrade my plan?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Visit your Profile page to choose a plan. Paid plans use Stripe Checkout. After successful payment your plan updates automatically."}
+      },
+      {
+        "@type": "Question",
+        "name": "How are payments and tips handled?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Plan payments are processed via Stripe. Tips are informational fields the streamer sets; actual tip transfers happen outside ClipThis using the payment handles the user provides (e.g., PayPal, Cash App, crypto addresses)."}
+      },
+      {
+        "@type": "Question",
+        "name": "What profile information can I share?",
+        "acceptedAnswer": {"@type": "Answer", "text": "You can add non-link payment handles (PayPal email, Cash App, Venmo, BTC/ETH/SOL wallets) and social handles (YouTube, Twitch, Kick, TikTok, Instagram, X/Twitter, Facebook, Reddit, Discord). Public profiles show handles but not your email address."}
+      },
+      {
+        "@type": "Question",
+        "name": "How do votes work?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Users can vote thumbs-up or thumbs-down on streams and clips. Each user has one vote per item and can toggle or change it. Plans set a limit on the total number of active votes a user may have."}
+      },
+      {
+        "@type": "Question",
+        "name": "Is my data private?",
+        "acceptedAnswer": {"@type": "Answer", "text": "We do not sell your data. See the Privacy Policy for details. Public profiles hide email addresses. Payment handles are shown as text you provide (no links)."}
+      }
+    ]
+  }
+  </script>
+{% endblock %}
+
+{% block content %}
+  <header class="mb-4">
+    <h1 class="h3">Q&A / Frequently Asked Questions</h1>
+    <p class="text-body-secondary">Clear, structured answers to common questions about ClipThis.</p>
+  </header>
+
+  <section class="mb-4">
+    <h2 class="h5">What is ClipThis?</h2>
+    <p>ClipThis connects streamers with community clippers. Streamers post active stream links with notes and a tip amount; signed-in users submit clip links (highlights) to those streams.</p>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h5">How do I sign in?</h2>
+    <p>Use <strong>Sign in with Google</strong> from the <a href="/accounts/login/">Login</a> or <a href="/accounts/signup/">Signup</a> page. We use your Google account for authentication only.</p>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h5">How do stream links and clip links work?</h2>
+    <p>A <em>stream link</em> is a URL to your stream (YouTube, Twitch, Kick). A <em>clip link</em> is a highlight URL submitted by any signed-in user under a specific stream link. One stream can have many clips.</p>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h5">Which platforms are supported?</h2>
+    <p>We accept links from: <strong>youtube.com</strong>, <strong>youtu.be</strong>, <strong>twitch.tv</strong>, and <strong>kick.com</strong>.</p>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h5">What plans are available? What are the limits?</h2>
+    <ul>
+      <li><strong>Free</strong>: up to 50 stream links; up to 100 active votes.</li>
+      <li><strong>Plus</strong> ($9.99): up to 200 stream links; up to 1000 active votes.</li>
+      <li><strong>Premium</strong> ($14.99): up to 500 stream links; up to 5000 active votes.</li>
+    </ul>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h5">How do I upgrade or downgrade?</h2>
+    <p>Go to your <a href="/profile/">Profile</a> and choose a plan. Paid plans use Stripe Checkout. After successful payment, your plan updates automatically.</p>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h5">How are payments and tips handled?</h2>
+    <p>Plan payments are processed via Stripe. Tip amounts are informational; actual tips happen outside ClipThis using payment handles you list (PayPal, Cash App, crypto, etc.).</p>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h5">What profile information can I share?</h2>
+    <p>Add non-link payment handles (PayPal, Cash App, Venmo, BTC/ETH/SOL) and social handles (YouTube, Twitch, Kick, TikTok, Instagram, X/Twitter, Facebook, Reddit, Discord). Public profiles do not show your email address.</p>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h5">How do votes work?</h2>
+    <p>You can vote thumbs-up or thumbs-down on streams and clips. One vote per item per user. You can toggle off or switch your vote. Your plan sets a cap on the total number of active votes.</p>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h5">Is my data private?</h2>
+    <p>We do not sell your data. See our <a href="/privacy/">Privacy Policy</a> for details. Public profiles hide your email.</p>
+  </section>
+{% endblock %}
+
