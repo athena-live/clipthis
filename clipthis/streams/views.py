@@ -123,6 +123,11 @@ class PublicStreamDetailView(DetailView):
             )
         )
         ctx['form'] = ClipForm()
+        try:
+            for c in ctx.get('clips') or []:
+                c.refresh_youtube_cache()
+        except Exception:
+            pass
         if self.request.user.is_authenticated:
             sr = StreamRating.objects.filter(stream=self.object, user=self.request.user).first()
             ctx['my_stream_vote'] = sr.value if sr else 0
@@ -160,6 +165,15 @@ class MyClipsView(LoginRequiredMixin, ListView):
             Clip.objects.filter(submitter=self.request.user)
             .select_related('stream', 'submitter')
         )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        try:
+            for c in ctx.get('clips') or []:
+                c.refresh_youtube_cache()
+        except Exception:
+            pass
+        return ctx
 
 
 class ClipUpdateView(LoginRequiredMixin, UpdateView):

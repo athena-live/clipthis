@@ -77,12 +77,58 @@ class Clip(models.Model):
     url = models.URLField(max_length=500, validators=[validate_stream_url])
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    # Cached YouTube metadata (optional)
+    yt_video_id = models.CharField(max_length=16, blank=True)
+    yt_title = models.CharField(max_length=300, blank=True)
+    yt_channel = models.CharField(max_length=200, blank=True)
+    yt_thumbnail = models.URLField(blank=True)
+    yt_published_at = models.DateTimeField(null=True, blank=True)
+    yt_view_count = models.BigIntegerField(default=0)
+    yt_like_count = models.BigIntegerField(default=0)
+    yt_duration = models.CharField(max_length=32, blank=True)
+    yt_cached_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self) -> str:
         return f"Clip for {self.stream_id} by {self.submitter_id}"
+
+    def _is_youtube(self) -> bool:
+        u = (self.url or '').lower()
+        return 'youtube.com' in u or 'youtu.be' in u
+
+    def refresh_youtube_cache(self, force: bool = False) -> None:
+        if not self._is_youtube():
+            return
+        vid = extract_youtube_id(self.url)
+        if not vid:
+            return
+        max_age_hours = getattr(django_settings, 'YOUTUBE_CACHE_HOURS', 24)
+        now = timezone.now()
+        if not force and self.yt_cached_at and (now - self.yt_cached_at).total_seconds() < max_age_hours * 3600:
+            return
+        data = fetch_youtube_video(getattr(django_settings, 'YOUTUBE_API_KEY', ''), vid)
+        if not data:
+            return
+        self.yt_video_id = vid
+        self.yt_title = data.get('title') or ''
+        self.yt_channel = data.get('channelTitle') or ''
+        self.yt_thumbnail = data.get('thumbnail') or ''
+        pub = data.get('publishedAt')
+        try:
+            if pub:
+                self.yt_published_at = timezone.datetime.fromisoformat(pub.replace('Z', '+00:00'))
+        except Exception:
+            pass
+        self.yt_view_count = int(data.get('viewCount') or 0)
+        self.yt_like_count = int(data.get('likeCount') or 0)
+        self.yt_duration = data.get('duration') or ''
+        self.yt_cached_at = now
+        self.save(update_fields=[
+            'yt_video_id','yt_title','yt_channel','yt_thumbnail','yt_published_at',
+            'yt_view_count','yt_like_count','yt_duration','yt_cached_at'
+        ])
 
 
 class StreamRating(models.Model):

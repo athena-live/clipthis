@@ -20,7 +20,17 @@
         <tbody>
           {% for c in clips %}
             <tr>
-              <td><a href="{{ c.url }}" target="_blank" rel="noopener">{{ c.url }}</a></td>
+              <td>
+                <div class="d-flex align-items-start gap-2">
+                  {% if c.yt_thumbnail %}
+                    <img src="{{ c.yt_thumbnail }}" alt="Thumbnail" style="width:80px;height:auto;border-radius:4px;" loading="lazy" />
+                  {% endif %}
+                  <div>
+                    <a href="{{ c.url }}" target="_blank" rel="noopener">{% if c.yt_title %}{{ c.yt_title }}{% else %}{{ c.url }}{% endif %}</a>
+                    {% if c.yt_channel %}<div class="text-muted small">{{ c.yt_channel }}</div>{% endif %}
+                  </div>
+                </div>
+              </td>
               <td><a href="{% url 'streams:public_detail' c.stream.pk %}">{{ c.stream.url }}</a></td>
               <td class="text-muted">{{ c.created_at|date:"Y-m-d H:i" }}</td>
               <td class="text-muted">{{ c.notes|default:'—' }}</td>

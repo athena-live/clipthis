@@ -34,10 +34,18 @@
           {% for clip in clips %}
             <li class="list-group-item">
               <div class="d-flex justify-content-between align-items-start">
-                <div>
-                  <div><a href="{{ clip.url }}" target="_blank" rel="noopener">{{ clip.url }}</a></div>
-                  <div class="text-muted small">by <a href="{% url 'streams:user_profile' clip.submitter.id %}">{{ clip.submitter.get_full_name|default:clip.submitter.username }}</a> • {{ clip.created_at|date:"Y-m-d H:i" }}</div>
-                  {% if clip.notes %}<div class="text-muted small mt-1">{{ clip.notes }}</div>{% endif %}
+                <div class="d-flex gap-3">
+                  {% if clip.yt_thumbnail %}
+                    <a href="{{ clip.url }}" target="_blank" rel="noopener"><img src="{{ clip.yt_thumbnail }}" alt="Thumbnail" style="width:120px;height:auto;border-radius:6px;" loading="lazy" /></a>
+                  {% endif %}
+                  <div>
+                    <div><a href="{{ clip.url }}" target="_blank" rel="noopener">{% if clip.yt_title %}{{ clip.yt_title }}{% else %}{{ clip.url }}{% endif %}</a></div>
+                    <div class="text-muted small">
+                      {% if clip.yt_channel %}{{ clip.yt_channel }} • {% endif %}
+                      by <a href="{% url 'streams:user_profile' clip.submitter.id %}">{{ clip.submitter.get_full_name|default:clip.submitter.username }}</a> • {{ clip.created_at|date:"Y-m-d H:i" }}
+                    </div>
+                    {% if clip.notes %}<div class="text-muted small mt-1">{{ clip.notes }}</div>{% endif %}
+                  </div>
                 </div>
                 <div>
                   {% if request.user.is_authenticated %}
