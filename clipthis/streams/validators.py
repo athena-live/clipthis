@@ -7,6 +7,7 @@ ALLOWED_STREAM_DOMAINS = {
     'youtu.be',
     'twitch.tv',
     'kick.com',
+    'pump.fun',
 }
 
 

@@ -89,10 +89,7 @@
             {% if profile.pumpfun_handle %}
               <div class="col-md-6"><strong>pump.fun:</strong> {{ profile.pumpfun_handle }}</div>
             {% endif %}
-            {% if profile.pumpfun_url %}
-              <div class="col-md-12"><strong>pump.fun URL:</strong> <a href="{{ profile.pumpfun_url }}" target="_blank" rel="noopener">{{ profile.pumpfun_url }}</a></div>
-            {% endif %}
-            {% if not profile.youtube and not profile.twitch and not profile.kick and not profile.tiktok and not profile.instagram and not profile.x and not profile.facebook and not profile.reddit and not profile.discord %}
+            {% if not profile.youtube and not profile.twitch and not profile.kick and not profile.tiktok and not profile.instagram and not profile.x and not profile.facebook and not profile.reddit and not profile.discord and not profile.pumpfun_handle %}
               <div class="col-12 text-muted">No social profiles shared.</div>
             {% endif %}
           </div>

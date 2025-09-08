@@ -94,7 +94,6 @@ class Profile(models.Model):
     reddit = models.CharField(max_length=120, blank=True, validators=[validate_no_links])
     discord = models.CharField(max_length=120, blank=True, validators=[validate_no_links], help_text='Discord username or server handle')
     pumpfun_handle = models.CharField(max_length=120, blank=True, validators=[validate_no_links], help_text='pump.fun handle (no links)')
-    pumpfun_url = models.URLField(blank=True, validators=[validate_pumpfun_url], help_text='pump.fun URL (optional)')
 
     PLAN_FREE = 'free'
     PLAN_PLUS = 'plus'

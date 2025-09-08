@@ -51,7 +51,7 @@ class ProfileForm(forms.ModelForm):
             # Socials
             'youtube', 'twitch', 'kick', 'tiktok', 'instagram', 'x', 'facebook', 'reddit', 'discord',
             # Pump.fun
-            'pumpfun_handle', 'pumpfun_url',
+            'pumpfun_handle',
         ]
         widgets = {
             'payment_note': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Any additional payment instructions…'}),
