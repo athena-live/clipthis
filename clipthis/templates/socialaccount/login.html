@@ -15,13 +15,22 @@
           </p>
 
           <div class="d-flex gap-2">
-            {% if process %}
-            <a class="btn btn-primary" href="{% provider_login_url provider.id process=process %}">
-            {% else %}
-            <a class="btn btn-primary" href="{% provider_login_url provider.id %}">
-            {% endif %}
-              <i class="fa-brands fa-google me-1"></i> Continue with {{ provider.name }}
-            </a>
+            <form id="provider-login-form" method="post"
+              {% if process and scope and auth_params %}
+                action="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}"
+              {% elif process and scope %}
+                action="{% provider_login_url provider.id process=process scope=scope %}"
+              {% elif process %}
+                action="{% provider_login_url provider.id process=process %}"
+              {% else %}
+                action="{% provider_login_url provider.id %}"
+              {% endif %}
+            >
+              {% csrf_token %}
+              <button class="btn btn-primary" type="submit">
+                <i class="fa-brands fa-google me-1"></i> Continue with {{ provider.name }}
+              </button>
+            </form>
             <a class="btn btn-outline-secondary" href="/accounts/login/">
               <i class="fa-solid fa-arrow-left me-1"></i> Back
             </a>
@@ -34,13 +43,10 @@
   </div>
 
   <script>
-    // Auto-forward after a short delay for a smoother UX
+    // Auto-submit the POST form after a short delay for a smoother UX
     setTimeout(function(){
-      {% if process %}
-      window.location.href = "{% provider_login_url provider.id process=process %}";
-      {% else %}
-      window.location.href = "{% provider_login_url provider.id %}";
-      {% endif %}
+      var f = document.getElementById('provider-login-form');
+      if (f) { f.submit(); }
     }, 400);
   </script>
 {% endblock %}
