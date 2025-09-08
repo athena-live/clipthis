@@ -38,6 +38,40 @@
               <div class="col-12 text-muted">No payment details shared.</div>
             {% endif %}
           </div>
+
+          <h2 class="h5 mt-4">Social Profiles</h2>
+          <div class="row g-3 mt-1">
+            {% if profile.youtube %}
+              <div class="col-md-6"><strong>YouTube:</strong> {{ profile.youtube }}</div>
+            {% endif %}
+            {% if profile.twitch %}
+              <div class="col-md-6"><strong>Twitch:</strong> {{ profile.twitch }}</div>
+            {% endif %}
+            {% if profile.kick %}
+              <div class="col-md-6"><strong>Kick:</strong> {{ profile.kick }}</div>
+            {% endif %}
+            {% if profile.tiktok %}
+              <div class="col-md-6"><strong>TikTok:</strong> {{ profile.tiktok }}</div>
+            {% endif %}
+            {% if profile.instagram %}
+              <div class="col-md-6"><strong>Instagram:</strong> {{ profile.instagram }}</div>
+            {% endif %}
+            {% if profile.x %}
+              <div class="col-md-6"><strong>X (Twitter):</strong> {{ profile.x }}</div>
+            {% endif %}
+            {% if profile.facebook %}
+              <div class="col-md-6"><strong>Facebook:</strong> {{ profile.facebook }}</div>
+            {% endif %}
+            {% if profile.reddit %}
+              <div class="col-md-6"><strong>Reddit:</strong> {{ profile.reddit }}</div>
+            {% endif %}
+            {% if profile.discord %}
+              <div class="col-md-6"><strong>Discord:</strong> {{ profile.discord }}</div>
+            {% endif %}
+            {% if not profile.youtube and not profile.twitch and not profile.kick and not profile.tiktok and not profile.instagram and not profile.x and not profile.facebook and not profile.reddit and not profile.discord %}
+              <div class="col-12 text-muted">No social profiles shared.</div>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>

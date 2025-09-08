@@ -49,5 +49,16 @@ class Profile(models.Model):
     other_handle = models.CharField(max_length=200, blank=True, validators=[validate_no_links])
     payment_note = models.TextField(blank=True)
 
+    # Social media / streaming handles (no links)
+    youtube = models.CharField(max_length=120, blank=True, validators=[validate_no_links])
+    twitch = models.CharField(max_length=120, blank=True, validators=[validate_no_links])
+    kick = models.CharField(max_length=120, blank=True, validators=[validate_no_links])
+    tiktok = models.CharField(max_length=120, blank=True, validators=[validate_no_links])
+    instagram = models.CharField(max_length=120, blank=True, validators=[validate_no_links])
+    x = models.CharField(max_length=120, blank=True, validators=[validate_no_links], help_text='X (formerly Twitter)')
+    facebook = models.CharField(max_length=120, blank=True, validators=[validate_no_links])
+    reddit = models.CharField(max_length=120, blank=True, validators=[validate_no_links])
+    discord = models.CharField(max_length=120, blank=True, validators=[validate_no_links], help_text='Discord username or server handle')
+
     def __str__(self) -> str:
         return f"Profile for {self.user_id}"

@@ -48,6 +48,8 @@ class ProfileForm(forms.ModelForm):
             'paypal', 'cashapp', 'venmo',
             'btc_address', 'eth_address', 'sol_address',
             'other_handle', 'payment_note',
+            # Socials
+            'youtube', 'twitch', 'kick', 'tiktok', 'instagram', 'x', 'facebook', 'reddit', 'discord',
         ]
         widgets = {
             'payment_note': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Any additional payment instructions…'}),
