@@ -62,7 +62,7 @@ class PublicActiveLinksView(ListView):
     context_object_name = 'active_links'
 
     def get_queryset(self):
-        return (
+        qs = (
             StreamLink.objects
             .filter(active=True)
             .select_related('owner')
@@ -72,6 +72,10 @@ class PublicActiveLinksView(ListView):
                 down_count=Count('stream_ratings', filter=Q(stream_ratings__value=-1), distinct=True),
             )
         )
+        # If user is not authenticated, do not show any active streams on the homepage.
+        if not getattr(self.request, 'user', None) or not self.request.user.is_authenticated:
+            return qs.none()
+        return qs
 
 
 class PublicStreamDetailView(DetailView):
