@@ -2,6 +2,9 @@
 {% block title %}Choose Your Plan • ClipThis{% endblock %}
 {% block content %}
   <h1 class="h4 mb-4">Choose your plan</h1>
+  {% if not stripe_pk %}
+    <div class="alert alert-warning">Payments are not fully configured. Paid plans may be unavailable.</div>
+  {% endif %}
   <div class="row g-4">
     <div class="col-12 col-md-4">
       <div class="card h-100 shadow-sm">
@@ -53,4 +56,3 @@
     </div>
   </div>
 {% endblock %}
-

@@ -7,6 +7,7 @@ from django.views import View
 from streams.forms import ProfileForm
 from streams.models import Profile, BillingTransaction
 from django.conf import settings
+from django.contrib import messages
 
 try:
     import stripe  # type: ignore
@@ -68,14 +69,19 @@ class PricingView(LoginRequiredMixin, View):
 class SelectPlanView(LoginRequiredMixin, View):
     def post(self, request, plan):
         if plan not in ('free', 'plus', 'premium'):
+            messages.error(request, 'Invalid plan selected.')
             return redirect('pricing')
         profile, _ = Profile.objects.get_or_create(user=request.user)
         # Free plan immediate
-        if plan == 'free' or not getattr(settings, 'STRIPE_SECRET_KEY', ''):
+        if plan == 'free':
             profile.plan = plan
             profile.save(update_fields=['plan'])
+            messages.success(request, 'You are now on the Free plan.')
             return redirect('profile')
         # For paid plans, create a checkout session if stripe available
+        if not getattr(settings, 'STRIPE_SECRET_KEY', '') or not stripe:
+            messages.error(request, 'Payments are not configured. Please try again later or contact support.')
+            return redirect('pricing')
         if stripe and getattr(settings, 'STRIPE_SECRET_KEY', ''):
             stripe.api_key = settings.STRIPE_SECRET_KEY
             price_map = {
@@ -84,6 +90,7 @@ class SelectPlanView(LoginRequiredMixin, View):
             }
             amount = price_map.get(plan)
             if not amount:
+                messages.error(request, 'Invalid price for selected plan.')
                 return redirect('pricing')
             try:
                 # Record pending transaction
@@ -113,15 +120,9 @@ class SelectPlanView(LoginRequiredMixin, View):
                 txn.stripe_session_id = session.id
                 txn.save(update_fields=['stripe_session_id'])
                 return redirect(session.url)
-            except Exception:
-                # Fallback: set plan directly if Stripe fails
-                profile.plan = plan
-                profile.save(update_fields=['plan'])
-                return redirect('profile')
-        # Without stripe module, set directly
-        profile.plan = plan
-        profile.save(update_fields=['plan'])
-        return redirect('profile')
+            except Exception as e:
+                messages.error(request, f'Unable to start checkout: {e}')
+                return redirect('pricing')
 
 
 class BillingSuccessView(LoginRequiredMixin, View):
@@ -145,6 +146,7 @@ class BillingSuccessView(LoginRequiredMixin, View):
                     profile, _ = Profile.objects.get_or_create(user=request.user)
                     profile.plan = plan
                     profile.save(update_fields=['plan'])
+                    messages.success(request, f'Your plan has been upgraded to {plan}.')
                     return redirect('profile')
             except Exception:
                 pass

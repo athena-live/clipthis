@@ -32,6 +32,13 @@
     </nav>
 
     <main class="container flex-grow-1 py-4">
+      {% if messages %}
+        <div class="mb-3">
+          {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
       {% block content %}{% endblock %}
     </main>
 
