@@ -13,4 +13,6 @@ urlpatterns = [
     # My clips
     path('clips/', views.MyClipsView.as_view(), name='my_clips'),
     path('clips/<int:pk>/edit/', views.ClipUpdateView.as_view(), name='clip_edit'),
+    # Public user profile
+    path('user/<int:user_id>/', views.PublicProfileView.as_view(), name='user_profile'),
 ]

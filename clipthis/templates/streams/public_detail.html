@@ -26,7 +26,7 @@
 
     <section>
       <h2><a href="{{ stream.url }}" target="_blank" rel="noopener">{{ stream.url }}</a></h2>
-      <div class="muted">by {{ stream.owner.get_full_name|default:stream.owner.username }} · tip: ${{ stream.tip_amount }}</div>
+      <div class="muted">by <a href="{% url 'streams:user_profile' stream.owner.id %}">{{ stream.owner.get_full_name|default:stream.owner.username }}</a> · tip: ${{ stream.tip_amount }}</div>
       {% if stream.notes %}<p>{{ stream.notes }}</p>{% endif %}
     </section>
 
@@ -37,7 +37,7 @@
           {% for clip in clips %}
             <li>
               <a href="{{ clip.url }}" target="_blank" rel="noopener">{{ clip.url }}</a>
-              <span class="muted">by {{ clip.submitter.get_full_name|default:clip.submitter.username }} • {{ clip.created_at|date:"Y-m-d H:i" }}</span>
+              <span class="muted">by <a href="{% url 'streams:user_profile' clip.submitter.id %}">{{ clip.submitter.get_full_name|default:clip.submitter.username }}</a> • {{ clip.created_at|date:"Y-m-d H:i" }}</span>
               {% if clip.notes %}<div class="muted">{{ clip.notes }}</div>{% endif %}
             </li>
           {% endfor %}
@@ -72,4 +72,3 @@
     </section>
   </body>
   </html>
-

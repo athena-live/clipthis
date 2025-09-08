@@ -2,8 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, View, DetailView
+from django.shortcuts import get_object_or_404, render
 
-from .models import StreamLink, Clip
+from .models import StreamLink, Clip, Profile
 from django.db.models import Count
 from .forms import StreamLinkForm, ClipForm
 
@@ -109,3 +110,20 @@ class ClipUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_queryset(self):
         return Clip.objects.filter(submitter=self.request.user)
+
+
+class PublicProfileView(View):
+    template_name = 'streams/public_profile.html'
+
+    def get(self, request, user_id: int):
+        user = get_object_or_404(self.model_user(), pk=user_id)
+        profile, _ = Profile.objects.get_or_create(user=user)
+        return render(request, self.template_name, {
+            'user_obj': user,
+            'profile': profile,
+        })
+
+    @staticmethod
+    def model_user():
+        from django.contrib.auth import get_user_model
+        return get_user_model()
