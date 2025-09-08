@@ -11,11 +11,11 @@
     </div>
   {% else %}
     <div class="alert alert-success" role="alert">
-      Welcome back. Manage your requests on <a href="/streams/" class="alert-link">My Streams</a>.
+      <i class="fa-solid fa-hand-wave me-1"></i>Welcome back. Manage your requests on <a href="/streams/" class="alert-link">My Streams</a>.
     </div>
   {% endif %}
 
-  <h2 class="h4 mt-4">Active Stream Requests</h2>
+  <h2 class="h4 mt-4"><i class="fa-solid fa-bolt me-1"></i>Active Stream Requests</h2>
   {% if active_links %}
     <ul class="list-group">
           {% for link in active_links %}
@@ -44,7 +44,7 @@
                     {% else %}
                       <span class="text-muted small">👍 {{ link.up_count|default:0 }} • 👎 {{ link.down_count|default:0 }}</span>
                     {% endif %}
-                    <a class="btn btn-sm btn-outline-primary" href="{% url 'streams:public_detail' link.pk %}">View details</a>
+                    <a class="btn btn-sm btn-outline-primary" href="{% url 'streams:public_detail' link.pk %}"><i class="fa-solid fa-eye me-1"></i>View details</a>
                   </div>
                 </div>
               </div>

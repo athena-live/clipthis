@@ -2,8 +2,8 @@
 {% block title %}My Stream Links • ClipThis{% endblock %}
 {% block content %}
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h4 m-0">My Stream Links</h1>
-    <a class="btn btn-primary" href="{% url 'streams:add' %}">Add Link</a>
+    <h1 class="h4 m-0"><i class="fa-solid fa-tower-broadcast me-1"></i>My Stream Links</h1>
+    <a class="btn btn-primary" href="{% url 'streams:add' %}"><i class="fa-solid fa-plus me-1"></i>Add Link</a>
   </div>
 
   {% if links %}
@@ -22,12 +22,12 @@
         <tbody>
           {% for link in links %}
             <tr>
-              <td><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.url }}</a></td>
+              <td><a href="{{ link.url }}" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square me-1"></i>{{ link.url }}</a></td>
               <td>
                 {% if link.active %}
-                  <span class="badge text-bg-success">Active</span>
+                  <span class="badge text-bg-success"><i class="fa-solid fa-circle-check me-1"></i>Active</span>
                 {% else %}
-                  <span class="badge text-bg-secondary">Inactive</span>
+                  <span class="badge text-bg-secondary"><i class="fa-regular fa-circle me-1"></i>Inactive</span>
                 {% endif %}
               </td>
               <td>${{ link.tip_amount }}</td>
@@ -35,10 +35,10 @@
               <td class="text-muted">{{ link.updated_at|date:"Y-m-d H:i" }}</td>
               <td>
                 <div class="d-flex gap-2">
-                  <a class="btn btn-sm btn-outline-primary" href="{% url 'streams:edit' link.pk %}">Edit</a>
+                  <a class="btn btn-sm btn-outline-primary" href="{% url 'streams:edit' link.pk %}"><i class="fa-regular fa-pen-to-square me-1"></i>Edit</a>
                   <form method="post" action="{% url 'streams:toggle' link.pk %}">
                     {% csrf_token %}
-                    <button class="btn btn-sm btn-outline-secondary" type="submit">{% if link.active %}Deactivate{% else %}Activate{% endif %}</button>
+                    <button class="btn btn-sm btn-outline-secondary" type="submit">{% if link.active %}<i class="fa-solid fa-ban me-1"></i>Deactivate{% else %}<i class="fa-solid fa-check me-1"></i>Activate{% endif %}</button>
                   </form>
                 </div>
               </td>
