@@ -27,4 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('streams/', include('streams.urls', namespace='streams')),
+    path('terms/', TemplateView.as_view(template_name='legal/terms.html'), name='terms'),
+    path('privacy/', TemplateView.as_view(template_name='legal/privacy.html'), name='privacy'),
+    path('copyright/', TemplateView.as_view(template_name='legal/copyright.html'), name='copyright'),
 ]
