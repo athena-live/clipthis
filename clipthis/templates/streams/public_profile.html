@@ -1,64 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ user_obj.get_full_name|default:user_obj.username }} • Profile</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-4">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">ClipThis</a>
-        <div class="d-flex">
-          <a class="btn btn-outline-secondary me-2" href="/">Home</a>
-        </div>
-      </div>
-    </nav>
+{% extends 'base.html' %}
+{% block title %}{{ user_obj.get_full_name|default:user_obj.username }} • Profile{% endblock %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h1 class="h4 mb-3">{{ user_obj.get_full_name|default:user_obj.username }}</h1>
+          <div class="text-muted mb-3">{{ user_obj.email }}</div>
 
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-8">
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <h1 class="h4 mb-3">{{ user_obj.get_full_name|default:user_obj.username }}</h1>
-              <div class="text-muted mb-3">{{ user_obj.email }}</div>
-
-              <h2 class="h5">Payment Information</h2>
-              <div class="row g-3 mt-1">
-                {% if profile.paypal %}
-                  <div class="col-md-6"><strong>PayPal:</strong> {{ profile.paypal }}</div>
-                {% endif %}
-                {% if profile.cashapp %}
-                  <div class="col-md-6"><strong>Cash App:</strong> {{ profile.cashapp }}</div>
-                {% endif %}
-                {% if profile.venmo %}
-                  <div class="col-md-6"><strong>Venmo:</strong> {{ profile.venmo }}</div>
-                {% endif %}
-                {% if profile.btc_address %}
-                  <div class="col-md-12"><strong>BTC:</strong> {{ profile.btc_address }}</div>
-                {% endif %}
-                {% if profile.eth_address %}
-                  <div class="col-md-12"><strong>ETH:</strong> {{ profile.eth_address }}</div>
-                {% endif %}
-                {% if profile.sol_address %}
-                  <div class="col-md-12"><strong>SOL:</strong> {{ profile.sol_address }}</div>
-                {% endif %}
-                {% if profile.other_handle %}
-                  <div class="col-md-12"><strong>Other:</strong> {{ profile.other_handle }}</div>
-                {% endif %}
-                {% if profile.payment_note %}
-                  <div class="col-md-12"><strong>Note:</strong> {{ profile.payment_note }}</div>
-                {% endif %}
-                {% if not profile.paypal and not profile.cashapp and not profile.venmo and not profile.btc_address and not profile.eth_address and not profile.sol_address and not profile.other_handle and not profile.payment_note %}
-                  <div class="col-12 text-muted">No payment details shared.</div>
-                {% endif %}
-              </div>
-            </div>
+          <h2 class="h5">Payment Information</h2>
+          <div class="row g-3 mt-1">
+            {% if profile.paypal %}
+              <div class="col-md-6"><strong>PayPal:</strong> {{ profile.paypal }}</div>
+            {% endif %}
+            {% if profile.cashapp %}
+              <div class="col-md-6"><strong>Cash App:</strong> {{ profile.cashapp }}</div>
+            {% endif %}
+            {% if profile.venmo %}
+              <div class="col-md-6"><strong>Venmo:</strong> {{ profile.venmo }}</div>
+            {% endif %}
+            {% if profile.btc_address %}
+              <div class="col-md-12"><strong>BTC:</strong> {{ profile.btc_address }}</div>
+            {% endif %}
+            {% if profile.eth_address %}
+              <div class="col-md-12"><strong>ETH:</strong> {{ profile.eth_address }}</div>
+            {% endif %}
+            {% if profile.sol_address %}
+              <div class="col-md-12"><strong>SOL:</strong> {{ profile.sol_address }}</div>
+            {% endif %}
+            {% if profile.other_handle %}
+              <div class="col-md-12"><strong>Other:</strong> {{ profile.other_handle }}</div>
+            {% endif %}
+            {% if profile.payment_note %}
+              <div class="col-md-12"><strong>Note:</strong> {{ profile.payment_note }}</div>
+            {% endif %}
+            {% if not profile.paypal and not profile.cashapp and not profile.venmo and not profile.btc_address and not profile.eth_address and not profile.sol_address and not profile.other_handle and not profile.payment_note %}
+              <div class="col-12 text-muted">No payment details shared.</div>
+            {% endif %}
           </div>
         </div>
       </div>
     </div>
-  </body>
-  </html>
-
+  </div>
+{% endblock %}

@@ -1,74 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Stream Request • ClipThis</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 2rem; }
-      header { display: flex; justify-content: space-between; align-items: center; }
-      .muted { color: #666; }
-      .btn { display: inline-block; padding: .35rem .6rem; border: 1px solid #ccc; border-radius: .35rem; text-decoration: none; background: #fff; }
-      form { max-width: 640px; }
-      label { display: block; margin-top: .75rem; font-weight: 600; }
-      input[type="url"], textarea { width: 100%; padding: .5rem; border: 1px solid #ccc; border-radius: .35rem; }
-      ul { padding-left: 1.25rem; }
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>Stream Request</h1>
-      <nav>
-        <a class="btn" href="/">Home</a>
-        <a class="btn" href="/streams/">My Streams</a>
-      </nav>
-    </header>
+{% extends 'base.html' %}
+{% block title %}Stream Request • ClipThis{% endblock %}
+{% block content %}
+  <div class="mb-3">
+    <h1 class="h4">Stream Request</h1>
+    <div>
+      <a class="link-underline link-underline-opacity-0" href="{{ stream.url }}" target="_blank" rel="noopener">{{ stream.url }}</a>
+    </div>
+    <div class="text-muted">by <a href="{% url 'streams:user_profile' stream.owner.id %}">{{ stream.owner.get_full_name|default:stream.owner.username }}</a> · tip: ${{ stream.tip_amount }}</div>
+    {% if stream.notes %}<p class="mt-2">{{ stream.notes }}</p>{% endif %}
+  </div>
 
-    <section>
-      <h2><a href="{{ stream.url }}" target="_blank" rel="noopener">{{ stream.url }}</a></h2>
-      <div class="muted">by <a href="{% url 'streams:user_profile' stream.owner.id %}">{{ stream.owner.get_full_name|default:stream.owner.username }}</a> · tip: ${{ stream.tip_amount }}</div>
-      {% if stream.notes %}<p>{{ stream.notes }}</p>{% endif %}
-    </section>
-
-    <section>
-      <h3>Submitted Clips</h3>
+  <div class="row g-4">
+    <div class="col-12 col-lg-7">
+      <h2 class="h5">Submitted Clips</h2>
       {% if clips %}
-        <ul>
+        <ul class="list-group">
           {% for clip in clips %}
-            <li>
-              <a href="{{ clip.url }}" target="_blank" rel="noopener">{{ clip.url }}</a>
-              <span class="muted">by <a href="{% url 'streams:user_profile' clip.submitter.id %}">{{ clip.submitter.get_full_name|default:clip.submitter.username }}</a> • {{ clip.created_at|date:"Y-m-d H:i" }}</span>
-              {% if clip.notes %}<div class="muted">{{ clip.notes }}</div>{% endif %}
+            <li class="list-group-item">
+              <div><a href="{{ clip.url }}" target="_blank" rel="noopener">{{ clip.url }}</a></div>
+              <div class="text-muted small">by <a href="{% url 'streams:user_profile' clip.submitter.id %}">{{ clip.submitter.get_full_name|default:clip.submitter.username }}</a> • {{ clip.created_at|date:"Y-m-d H:i" }}</div>
+              {% if clip.notes %}<div class="text-muted small mt-1">{{ clip.notes }}</div>{% endif %}
             </li>
           {% endfor %}
         </ul>
       {% else %}
-        <p class="muted">No clips submitted yet.</p>
+        <p class="text-muted">No clips submitted yet.</p>
       {% endif %}
-    </section>
+    </div>
 
-    <section>
-      <h3>Submit a Clip</h3>
+    <div class="col-12 col-lg-5">
+      <h2 class="h5">Submit a Clip</h2>
       {% if request.user.is_authenticated %}
-        <form method="post">
+        <form method="post" class="">
           {% csrf_token %}
           {% if form.non_field_errors %}
-            <div style="color:#b00;">{{ form.non_field_errors }}</div>
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
           {% endif %}
-          <label for="id_url">Clip URL</label>
-          {{ form.url }}
-          <div class="muted">Allowed: YouTube, Twitch, Kick</div>
-
-          <label for="id_notes">Notes</label>
-          {{ form.notes }}
-
-          <div style="margin-top:.75rem;">
-            <button class="btn" type="submit">Submit Clip</button>
+          <div class="mb-3">
+            <label class="form-label" for="id_url">Clip URL</label>
+            {{ form.url }}
+            <div class="form-text">Allowed: YouTube, Twitch, Kick</div>
           </div>
+          <div class="mb-3">
+            <label class="form-label" for="id_notes">Notes</label>
+            {{ form.notes }}
+          </div>
+          <button class="btn btn-primary" type="submit">Submit Clip</button>
         </form>
       {% else %}
         <p>Please <a href="/accounts/login/">sign in</a> to submit a clip.</p>
       {% endif %}
-    </section>
-  </body>
-  </html>
+    </div>
+  </div>
+{% endblock %}

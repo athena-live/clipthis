@@ -1,64 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ClipThis</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 2rem; }
-      header { display: flex; justify-content: space-between; align-items: center; }
-      nav a { margin-left: 1rem; }
-      main { margin-top: 2rem; max-width: 720px; }
-      .cta { display: inline-block; padding: .6rem 1rem; border-radius: 6px; background: #111; color: #fff; text-decoration: none; }
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>ClipThis</h1>
-      <nav>
-        {% if request.user.is_authenticated %}
-          <span>Hi, {{ request.user.get_full_name|default:request.user.username }}</span>
-          <a href="/streams/">My Streams</a>
-          <a href="/streams/clips/">My Clips</a>
-          <a href="/profile/">Profile</a>
-          <a href="/accounts/logout/">Logout</a>
-        {% else %}
-          <a href="/accounts/login/">Login</a>
-          <a href="/accounts/signup/">Sign up</a>
-        {% endif %}
-      </nav>
-    </header>
-    <main>
-      {% if not request.user.is_authenticated %}
-        <h2>Bring stream clippers and streamers together</h2>
-        <p>Discover, create, and share great stream highlights with your community.</p>
-        <p>
-          <a class="cta" href="/accounts/login/">Get started with Google</a>
-        </p>
-      {% else %}
-        <h2>Welcome back</h2>
-        <p>
-          Manage your requests and links on <a class="cta" href="/streams/">My Streams</a>.
-        </p>
-      {% endif %}
+{% extends 'base.html' %}
+{% block title %}ClipThis{% endblock %}
+{% block content %}
+  {% if not request.user.is_authenticated %}
+    <div class="p-4 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+        <h2 class="display-6">Bring stream clippers and streamers together</h2>
+        <p class="lead">Discover, create, and share great stream highlights with your community.</p>
+        <a class="btn btn-primary" href="/accounts/login/">Get started with Google</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-success" role="alert">
+      Welcome back. Manage your requests on <a href="/streams/" class="alert-link">My Streams</a>.
+    </div>
+  {% endif %}
 
-      <h2 style="margin-top:2rem;">Active Stream Requests</h2>
-      {% if active_links %}
-        <ul>
-          {% for link in active_links %}
-            <li>
-              <a href="{% url 'streams:public_detail' link.pk %}">{{ link.url }}</a>
-              <span class="muted">by {{ link.owner.get_full_name|default:link.owner.username }} · tip: ${{ link.tip_amount }} · clips: {{ link.clip_count|default:link.clips.count }}</span>
-              {% if link.notes %}<div class="muted">{{ link.notes }}</div>{% endif %}
-              <div style="margin-top:.35rem;">
-                <a class="cta" href="{% url 'streams:public_detail' link.pk %}">View details</a>
+  <h2 class="h4 mt-4">Active Stream Requests</h2>
+  {% if active_links %}
+    <ul class="list-group">
+      {% for link in active_links %}
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <a class="fw-semibold" href="{% url 'streams:public_detail' link.pk %}">{{ link.url }}</a>
+              <div class="text-muted small">
+                by {{ link.owner.get_full_name|default:link.owner.username }} · tip: ${{ link.tip_amount }} · clips: {{ link.clip_count|default:link.clips.count }}
               </div>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p class="muted">No active requests yet.</p>
-      {% endif %}
-    </main>
-  </body>
-</html>
+              {% if link.notes %}<div class="text-muted small mt-1">{{ link.notes }}</div>{% endif %}
+            </div>
+            <div>
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'streams:public_detail' link.pk %}">View details</a>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">No active requests yet.</p>
+  {% endif %}
+{% endblock %}

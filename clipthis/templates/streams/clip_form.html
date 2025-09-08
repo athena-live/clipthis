@@ -1,40 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Edit Clip • ClipThis</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 2rem; }
-      form { max-width: 640px; }
-      label { display: block; margin-top: .75rem; font-weight: 600; }
-      input[type="url"], textarea { width: 100%; padding: .5rem; border: 1px solid #ccc; border-radius: .35rem; }
-      .btn { display: inline-block; padding: .45rem .8rem; border: 1px solid #ccc; border-radius: .35rem; text-decoration: none; background: #fff; }
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>Edit Clip</h1>
-      <p><a class="btn" href="{% url 'streams:my_clips' %}">Back to My Clips</a></p>
-    </header>
+{% extends 'base.html' %}
+{% block title %}Edit Clip • ClipThis{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 m-0">Edit Clip</h1>
+    <a class="btn btn-outline-secondary" href="{% url 'streams:my_clips' %}">Back to My Clips</a>
+  </div>
 
-    <form method="post">
-      {% csrf_token %}
-      {% if form.non_field_errors %}
-        <div style="color:#b00;">{{ form.non_field_errors }}</div>
-      {% endif %}
+  <form method="post" class="col-12 col-lg-8">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
 
-      <label for="id_url">Clip URL</label>
+    <div class="mb-3">
+      <label class="form-label" for="id_url">Clip URL</label>
       {{ form.url }}
-      <div class="muted">Allowed: YouTube, Twitch, Kick</div>
+      <div class="form-text">Allowed: YouTube, Twitch, Kick</div>
+    </div>
 
-      <label for="id_notes">Notes</label>
+    <div class="mb-3">
+      <label class="form-label" for="id_notes">Notes</label>
       {{ form.notes }}
+    </div>
 
-      <div style="margin-top:.75rem;">
-        <button class="btn" type="submit">Save</button>
-      </div>
-    </form>
-  </body>
-  </html>
-
+    <button class="btn btn-primary" type="submit">Save</button>
+  </form>
+{% endblock %}
