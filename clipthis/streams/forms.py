@@ -1,5 +1,5 @@
 from django import forms
-from .models import StreamLink, Clip
+from .models import StreamLink, Clip, Profile
 
 
 class StreamLinkForm(forms.ModelForm):
@@ -22,4 +22,17 @@ class ClipForm(forms.ModelForm):
         fields = ['url', 'notes']
         widgets = {
             'notes': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Any context for this clip…'}),
+        }
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = [
+            'paypal', 'cashapp', 'venmo',
+            'btc_address', 'eth_address', 'sol_address',
+            'other_handle', 'payment_note',
+        ]
+        widgets = {
+            'payment_note': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Any additional payment instructions…'}),
         }

@@ -28,3 +28,11 @@ def validate_stream_url(value: str) -> None:
     if not any(host == d or host.endswith(f'.{d}') for d in ALLOWED_STREAM_DOMAINS):
         raise ValidationError('Only YouTube, Twitch, or Kick links are allowed.')
 
+
+def validate_no_links(value: str) -> None:
+    """Ensure the value does not look like a URL/link."""
+    if not value:
+        return
+    lower = str(value).strip().lower()
+    if lower.startswith(('http://', 'https://', 'www.')) or '://' in lower:
+        raise ValidationError('Links are not allowed here; use plain handles or addresses.')

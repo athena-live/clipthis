@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from .validators import validate_stream_url
+from .validators import validate_stream_url, validate_no_links
 
 
 class StreamLink(models.Model):
@@ -31,3 +31,23 @@ class Clip(models.Model):
 
     def __str__(self) -> str:
         return f"Clip for {self.stream_id} by {self.submitter_id}"
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+
+    # Payment handles (no links)
+    paypal = models.CharField(max_length=120, blank=True, validators=[validate_no_links], help_text='PayPal email or handle (no links)')
+    cashapp = models.CharField(max_length=120, blank=True, validators=[validate_no_links])
+    venmo = models.CharField(max_length=120, blank=True, validators=[validate_no_links])
+
+    # Common crypto wallet addresses
+    btc_address = models.CharField(max_length=128, blank=True, validators=[validate_no_links])
+    eth_address = models.CharField(max_length=128, blank=True, validators=[validate_no_links])
+    sol_address = models.CharField(max_length=128, blank=True, validators=[validate_no_links])
+
+    other_handle = models.CharField(max_length=200, blank=True, validators=[validate_no_links])
+    payment_note = models.TextField(blank=True)
+
+    def __str__(self) -> str:
+        return f"Profile for {self.user_id}"

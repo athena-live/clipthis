@@ -53,13 +53,41 @@
 
       <hr style="margin:1.25rem 0;" />
 
-      <h3>Update your name</h3>
       <form method="post" action="">
         {% csrf_token %}
+        <h3>Update your name</h3>
         <label for="id_first_name">First name</label>
-        {{ form.first_name }}
+        {{ user_form.first_name }}
         <label for="id_last_name">Last name</label>
-        {{ form.last_name }}
+        {{ user_form.last_name }}
+
+        <hr style="margin:1.25rem 0;" />
+
+        <h3>Payment handles (no links)</h3>
+        <label for="id_paypal">PayPal</label>
+        {{ profile_form.paypal }}
+
+        <label for="id_cashapp">Cash App</label>
+        {{ profile_form.cashapp }}
+
+        <label for="id_venmo">Venmo</label>
+        {{ profile_form.venmo }}
+
+        <label for="id_btc_address">Bitcoin address</label>
+        {{ profile_form.btc_address }}
+
+        <label for="id_eth_address">Ethereum address</label>
+        {{ profile_form.eth_address }}
+
+        <label for="id_sol_address">Solana address</label>
+        {{ profile_form.sol_address }}
+
+        <label for="id_other_handle">Other handle</label>
+        {{ profile_form.other_handle }}
+
+        <label for="id_payment_note">Payment note</label>
+        {{ profile_form.payment_note }}
+
         <div style="margin-top:.75rem;">
           <button class="btn" type="submit">Save</button>
         </div>
