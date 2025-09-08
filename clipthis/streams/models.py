@@ -94,5 +94,25 @@ class Profile(models.Model):
     reddit = models.CharField(max_length=120, blank=True, validators=[validate_no_links])
     discord = models.CharField(max_length=120, blank=True, validators=[validate_no_links], help_text='Discord username or server handle')
 
+    PLAN_FREE = 'free'
+    PLAN_PLUS = 'plus'
+    PLAN_PREMIUM = 'premium'
+    PLAN_CHOICES = (
+        (PLAN_FREE, 'Free'),
+        (PLAN_PLUS, 'Plus'),
+        (PLAN_PREMIUM, 'Premium'),
+    )
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default=PLAN_FREE)
+    plan_set_at = models.DateTimeField(auto_now_add=True)
+
+    @staticmethod
+    def plan_limit(plan: str) -> int:
+        limits = {
+            Profile.PLAN_FREE: 50,
+            Profile.PLAN_PLUS: 200,
+            Profile.PLAN_PREMIUM: 500,
+        }
+        return limits.get(plan or Profile.PLAN_FREE, 50)
+
     def __str__(self) -> str:
         return f"Profile for {self.user_id}"

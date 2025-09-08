@@ -26,6 +26,13 @@ class StreamLinkCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
+        # Enforce plan limits
+        profile, _ = Profile.objects.get_or_create(user=self.request.user)
+        limit = Profile.plan_limit(profile.plan)
+        existing = StreamLink.objects.filter(owner=self.request.user).count()
+        if existing >= limit:
+            form.add_error(None, f"Link limit reached for your plan ({profile.plan}). Upgrade to add more.")
+            return self.form_invalid(form)
         return super().form_valid(form)
 
 

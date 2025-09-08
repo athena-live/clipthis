@@ -22,3 +22,6 @@ PyJWT>=2.8,<3
 
 # Crypto primitives (required by some auth/libs)
 cryptography>=42,<43
+
+# Stripe payments SDK
+stripe>=5,<6

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Choose Your Plan • ClipThis{% endblock %}
+{% block content %}
+  <h1 class="h4 mb-4">Choose your plan</h1>
+  <div class="row g-4">
+    <div class="col-12 col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <h2 class="h5">Basic</h2>
+          <div class="mb-2">Free</div>
+          <ul class="text-muted small mb-4">
+            <li>Up to 50 stream links</li>
+            <li>Public listings</li>
+          </ul>
+          <form method="post" action="{% url 'billing_select' 'free' %}" class="mt-auto">
+            {% csrf_token %}
+            <button class="btn btn-outline-primary w-100" type="submit">Choose Free</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <h2 class="h5">Plus</h2>
+          <div class="mb-2">$9.99 / month</div>
+          <ul class="text-muted small mb-4">
+            <li>Up to 200 stream links</li>
+            <li>Priority visibility</li>
+          </ul>
+          <form method="post" action="{% url 'billing_select' 'plus' %}" class="mt-auto">
+            {% csrf_token %}
+            <button class="btn btn-primary w-100" type="submit">Choose Plus</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <h2 class="h5">Premium</h2>
+          <div class="mb-2">$14.99 / month</div>
+          <ul class="text-muted small mb-4">
+            <li>Up to 500 stream links</li>
+            <li>Top placement</li>
+          </ul>
+          <form method="post" action="{% url 'billing_select' 'premium' %}" class="mt-auto">
+            {% csrf_token %}
+            <button class="btn btn-primary w-100" type="submit">Choose Premium</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
