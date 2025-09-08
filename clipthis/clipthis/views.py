@@ -25,6 +25,30 @@ class ProfileView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         profile, _ = Profile.objects.get_or_create(user=user)
+        # Reconcile any pending Stripe transactions (in case user didn't hit success URL)
+        if stripe and getattr(settings, 'STRIPE_SECRET_KEY', ''):
+            try:
+                pending = BillingTransaction.objects.filter(user=user, status=BillingTransaction.STATUS_PENDING).order_by('-created_at')[:3]
+                if pending:
+                    stripe.api_key = settings.STRIPE_SECRET_KEY
+                    for txn in pending:
+                        if not txn.stripe_session_id:
+                            continue
+                        try:
+                            sess = stripe.checkout.Session.retrieve(txn.stripe_session_id)
+                            pay_status = getattr(sess, 'payment_status', None)
+                            if pay_status == 'paid':
+                                txn.status = BillingTransaction.STATUS_PAID
+                                txn.stripe_payment_intent = getattr(sess, 'payment_intent', '') or ''
+                                txn.save(update_fields=['status', 'stripe_payment_intent'])
+                                profile.plan = txn.plan
+                                profile.save(update_fields=['plan'])
+                                messages.success(request, f'Your plan has been upgraded to {txn.plan}.')
+                                break
+                        except Exception:
+                            continue
+            except Exception:
+                pass
         user_form = self._user_form(instance=user)
         profile_form = ProfileForm(instance=profile)
         used = StreamLink.objects.filter(owner=user).count()
@@ -157,16 +181,27 @@ class BillingSuccessView(LoginRequiredMixin, View):
             try:
                 stripe.api_key = settings.STRIPE_SECRET_KEY
                 session = stripe.checkout.Session.retrieve(session_id)
-                payment_intent = session.get('payment_intent')
-                payment_status = session.get('payment_status')
+                payment_intent = getattr(session, 'payment_intent', None)
+                payment_status = getattr(session, 'payment_status', None)
                 # Update transaction
                 txn = BillingTransaction.objects.filter(user=request.user, stripe_session_id=session_id).first()
                 if txn:
-                    txn.status = BillingTransaction.STATUS_PAID if payment_status == 'paid' else BillingTransaction.STATUS_FAILED
+                    # Fallback to payment_intent status if payment_status not present
+                    status = BillingTransaction.STATUS_FAILED
+                    if payment_status == 'paid':
+                        status = BillingTransaction.STATUS_PAID
+                    elif payment_intent:
+                        try:
+                            pi = stripe.PaymentIntent.retrieve(payment_intent)
+                            if getattr(pi, 'status', '') in ('succeeded', 'requires_capture'):
+                                status = BillingTransaction.STATUS_PAID
+                        except Exception:
+                            pass
+                    txn.status = status
                     txn.stripe_payment_intent = payment_intent or ''
                     txn.save(update_fields=['status', 'stripe_payment_intent'])
                 # Apply plan if paid
-                if payment_status == 'paid':
+                if payment_status == 'paid' or (txn and txn.status == BillingTransaction.STATUS_PAID):
                     profile, _ = Profile.objects.get_or_create(user=request.user)
                     profile.plan = plan
                     profile.save(update_fields=['plan'])
