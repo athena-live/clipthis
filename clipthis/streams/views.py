@@ -87,3 +87,25 @@ class PublicStreamDetailView(DetailView):
         ctx = self.get_context_data(object=self.object)
         ctx['form'] = form
         return self.render_to_response(ctx)
+
+
+class MyClipsView(LoginRequiredMixin, ListView):
+    model = Clip
+    template_name = 'streams/clip_list.html'
+    context_object_name = 'clips'
+
+    def get_queryset(self):
+        return (
+            Clip.objects.filter(submitter=self.request.user)
+            .select_related('stream', 'submitter')
+        )
+
+
+class ClipUpdateView(LoginRequiredMixin, UpdateView):
+    model = Clip
+    form_class = ClipForm
+    template_name = 'streams/clip_form.html'
+    success_url = reverse_lazy('streams:my_clips')
+
+    def get_queryset(self):
+        return Clip.objects.filter(submitter=self.request.user)

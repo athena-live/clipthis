@@ -10,4 +10,7 @@ urlpatterns = [
     path('<int:pk>/toggle/', views.StreamLinkToggleActiveView.as_view(), name='toggle'),
     # Public detail page for a stream
     path('<int:pk>/', views.PublicStreamDetailView.as_view(), name='public_detail'),
+    # My clips
+    path('clips/', views.MyClipsView.as_view(), name='my_clips'),
+    path('clips/<int:pk>/edit/', views.ClipUpdateView.as_view(), name='clip_edit'),
 ]

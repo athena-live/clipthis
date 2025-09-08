@@ -19,6 +19,7 @@
         {% if request.user.is_authenticated %}
           <span>Hi, {{ request.user.get_full_name|default:request.user.username }}</span>
           <a href="/streams/">My Streams</a>
+          <a href="/streams/clips/">My Clips</a>
           <a href="/profile/">Profile</a>
           <a href="/accounts/logout/">Logout</a>
         {% else %}
