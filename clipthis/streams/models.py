@@ -124,6 +124,14 @@ class Profile(models.Model):
         }
         return limits.get(plan or Profile.PLAN_FREE, 100)
 
+    THEME_DARK = 'dark'
+    THEME_LIGHT = 'light'
+    THEME_CHOICES = (
+        (THEME_DARK, 'Dark'),
+        (THEME_LIGHT, 'Light'),
+    )
+    theme = models.CharField(max_length=10, choices=THEME_CHOICES, default=THEME_DARK)
+
 
 class BillingTransaction(models.Model):
     PLAN_CHOICES = (

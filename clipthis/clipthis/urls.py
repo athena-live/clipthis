@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from streams.views import PublicActiveLinksView
 from django.contrib.auth.decorators import login_required
-from .views import ProfileView, PricingView, SelectPlanView, BillingSuccessView, BillingCancelView
+from .views import ProfileView, PricingView, SelectPlanView, BillingSuccessView, BillingCancelView, ThemeToggleView
 
 urlpatterns = [
     path('', PublicActiveLinksView.as_view(), name='home'),
@@ -31,6 +31,7 @@ urlpatterns = [
     path('billing/select/<str:plan>/', SelectPlanView.as_view(), name='billing_select'),
     path('billing/success/', BillingSuccessView.as_view(), name='billing_success'),
     path('billing/cancel/', BillingCancelView.as_view(), name='billing_cancel'),
+    path('settings/theme/', ThemeToggleView.as_view(), name='theme_toggle'),
     path('terms/', TemplateView.as_view(template_name='legal/terms.html'), name='terms'),
     path('privacy/', TemplateView.as_view(template_name='legal/privacy.html'), name='privacy'),
     path('copyright/', TemplateView.as_view(template_name='legal/copyright.html'), name='copyright'),

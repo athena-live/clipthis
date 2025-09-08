@@ -225,3 +225,15 @@ class BillingSuccessView(LoginRequiredMixin, View):
 class BillingCancelView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'billing/cancel.html')
+
+
+class ThemeToggleView(LoginRequiredMixin, View):
+    def post(self, request):
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+        new_theme = request.POST.get('theme')
+        if new_theme in (Profile.THEME_DARK, Profile.THEME_LIGHT):
+            profile.theme = new_theme
+        else:
+            profile.theme = Profile.THEME_LIGHT if profile.theme == Profile.THEME_DARK else Profile.THEME_DARK
+        profile.save(update_fields=['theme'])
+        return redirect(request.META.get('HTTP_REFERER', '/'))
