@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, View, DetailView
 from django.shortcuts import get_object_or_404, render
+from django.contrib import messages
 
 from .models import StreamLink, Clip, Profile, StreamRating, ClipRating
 from django.db.models import Count, Q
@@ -210,13 +211,25 @@ class RateStreamView(LoginRequiredMixin, View):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
         if value not in (1, -1):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-        obj, created = StreamRating.objects.get_or_create(stream=stream, user=request.user, defaults={'value': value})
-        if not created:
+        obj = StreamRating.objects.filter(stream=stream, user=request.user).first()
+        if obj:
             if obj.value == value:
                 obj.delete()  # toggle off
             else:
                 obj.value = value
                 obj.save(update_fields=['value'])
+        else:
+            # Enforce vote limit for new vote
+            profile, _ = Profile.objects.get_or_create(user=request.user)
+            limit = Profile.vote_limit(profile.plan)
+            total_votes = (
+                StreamRating.objects.filter(user=request.user).count()
+                + ClipRating.objects.filter(user=request.user).count()
+            )
+            if total_votes >= limit:
+                messages.error(request, 'You have reached your vote limit for your current plan. Consider upgrading to vote more.')
+            else:
+                StreamRating.objects.create(stream=stream, user=request.user, value=value)
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
@@ -229,11 +242,23 @@ class RateClipView(LoginRequiredMixin, View):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
         if value not in (1, -1):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-        obj, created = ClipRating.objects.get_or_create(clip=clip, user=request.user, defaults={'value': value})
-        if not created:
+        obj = ClipRating.objects.filter(clip=clip, user=request.user).first()
+        if obj:
             if obj.value == value:
                 obj.delete()
             else:
                 obj.value = value
                 obj.save(update_fields=['value'])
+        else:
+            # Enforce vote limit for new vote
+            profile, _ = Profile.objects.get_or_create(user=request.user)
+            limit = Profile.vote_limit(profile.plan)
+            total_votes = (
+                StreamRating.objects.filter(user=request.user).count()
+                + ClipRating.objects.filter(user=request.user).count()
+            )
+            if total_votes >= limit:
+                messages.error(request, 'You have reached your vote limit for your current plan. Consider upgrading to vote more.')
+            else:
+                ClipRating.objects.create(clip=clip, user=request.user, value=value)
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

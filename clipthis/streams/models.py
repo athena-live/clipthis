@@ -114,6 +114,16 @@ class Profile(models.Model):
         }
         return limits.get(plan or Profile.PLAN_FREE, 50)
 
+    @staticmethod
+    def vote_limit(plan: str) -> int:
+        """Maximum number of active votes (stream + clip) a user may place based on plan."""
+        limits = {
+            Profile.PLAN_FREE: 100,
+            Profile.PLAN_PLUS: 1000,
+            Profile.PLAN_PREMIUM: 5000,
+        }
+        return limits.get(plan or Profile.PLAN_FREE, 100)
+
 
 class BillingTransaction(models.Model):
     PLAN_CHOICES = (
