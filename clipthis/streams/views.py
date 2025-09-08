@@ -59,9 +59,9 @@ class PublicActiveLinksView(ListView):
             .filter(active=True)
             .select_related('owner')
             .annotate(
-                clip_count=Count('clips'),
-                up_count=Count('stream_ratings', filter=Q(stream_ratings__value=1)),
-                down_count=Count('stream_ratings', filter=Q(stream_ratings__value=-1)),
+                clip_count=Count('clips', distinct=True),
+                up_count=Count('stream_ratings', filter=Q(stream_ratings__value=1), distinct=True),
+                down_count=Count('stream_ratings', filter=Q(stream_ratings__value=-1), distinct=True),
             )
         )
 
@@ -76,8 +76,8 @@ class PublicStreamDetailView(DetailView):
         return (
             super().get_queryset()
             .annotate(
-                up_count=Count('stream_ratings', filter=Q(stream_ratings__value=1)),
-                down_count=Count('stream_ratings', filter=Q(stream_ratings__value=-1)),
+                up_count=Count('stream_ratings', filter=Q(stream_ratings__value=1), distinct=True),
+                down_count=Count('stream_ratings', filter=Q(stream_ratings__value=-1), distinct=True),
             )
         )
 
@@ -87,8 +87,8 @@ class PublicStreamDetailView(DetailView):
             self.object.clips
             .select_related('submitter')
             .annotate(
-                up_count=Count('clip_ratings', filter=Q(clip_ratings__value=1)),
-                down_count=Count('clip_ratings', filter=Q(clip_ratings__value=-1)),
+                up_count=Count('clip_ratings', filter=Q(clip_ratings__value=1), distinct=True),
+                down_count=Count('clip_ratings', filter=Q(clip_ratings__value=-1), distinct=True),
             )
         )
         ctx['form'] = ClipForm()
