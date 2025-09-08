@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.db import models
-from .validators import validate_stream_url, validate_no_links, validate_pumpfun_url
+from django.utils import timezone
+from django.conf import settings as django_settings
+from .validators import validate_stream_url, validate_no_links
+from .utils import extract_youtube_id, fetch_youtube_video
 
 
 class StreamLink(models.Model):
@@ -11,12 +14,61 @@ class StreamLink(models.Model):
     tip_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # Cached YouTube metadata (optional)
+    yt_video_id = models.CharField(max_length=16, blank=True)
+    yt_title = models.CharField(max_length=300, blank=True)
+    yt_channel = models.CharField(max_length=200, blank=True)
+    yt_thumbnail = models.URLField(blank=True)
+    yt_published_at = models.DateTimeField(null=True, blank=True)
+    yt_view_count = models.BigIntegerField(default=0)
+    yt_like_count = models.BigIntegerField(default=0)
+    yt_duration = models.CharField(max_length=32, blank=True)
+    yt_cached_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self) -> str:
         return f"{self.owner} – {self.url}"
+
+    def _is_youtube(self) -> bool:
+        u = (self.url or '').lower()
+        return 'youtube.com' in u or 'youtu.be' in u
+
+    def refresh_youtube_cache(self, force: bool = False) -> None:
+        if not self._is_youtube():
+            return
+        vid = extract_youtube_id(self.url)
+        if not vid:
+            return
+        # Check staleness
+        max_age_hours = getattr(django_settings, 'YOUTUBE_CACHE_HOURS', 24)
+        now = timezone.now()
+        if not force and self.yt_cached_at and (now - self.yt_cached_at).total_seconds() < max_age_hours * 3600:
+            return
+        data = fetch_youtube_video(getattr(django_settings, 'YOUTUBE_API_KEY', ''), vid)
+        if not data:
+            return
+        self.yt_video_id = vid
+        self.yt_title = data.get('title') or ''
+        self.yt_channel = data.get('channelTitle') or ''
+        self.yt_thumbnail = data.get('thumbnail') or ''
+        pub = data.get('publishedAt')
+        try:
+            if pub:
+                # ISO8601 date
+                self.yt_published_at = timezone.datetime.fromisoformat(pub.replace('Z', '+00:00'))
+        except Exception:
+            pass
+        self.yt_view_count = int(data.get('viewCount') or 0)
+        self.yt_like_count = int(data.get('likeCount') or 0)
+        self.yt_duration = data.get('duration') or ''
+        self.yt_cached_at = now
+        # Save only cached fields to avoid racing owner/url
+        self.save(update_fields=[
+            'yt_video_id','yt_title','yt_channel','yt_thumbnail','yt_published_at',
+            'yt_view_count','yt_like_count','yt_duration','yt_cached_at'
+        ])
 
 
 class Clip(models.Model):

@@ -76,12 +76,20 @@
         {% for link in active_links %}
           <li class="list-group-item">
             <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <a class="fw-semibold" href="{% url 'streams:public_detail' link.pk %}"><i class="fa-solid fa-up-right-from-square me-1"></i>{{ link.url }}</a>
-                <div class="text-muted small">
-                  by {{ link.owner.get_full_name|default:link.owner.username }} · <i class="fa-solid fa-dollar-sign me-1"></i>${{ link.tip_amount }} · <i class="fa-solid fa-film me-1"></i>{{ link.clip_count|default:link.clips.count }}
+              <div class="d-flex gap-3">
+                {% if link.yt_thumbnail %}
+                  <a href="{% url 'streams:public_detail' link.pk %}"><img src="{{ link.yt_thumbnail }}" alt="Thumbnail" style="width:120px;height:auto;border-radius:6px;" loading="lazy" /></a>
+                {% endif %}
+                <div>
+                  <a class="fw-semibold" href="{% url 'streams:public_detail' link.pk %}">
+                    {% if link.yt_title %}{{ link.yt_title }}{% else %}<i class="fa-solid fa-up-right-from-square me-1"></i>{{ link.url }}{% endif %}
+                  </a>
+                  <div class="text-muted small">
+                    {% if link.yt_channel %}{{ link.yt_channel }} • {% endif %}
+                    by {{ link.owner.get_full_name|default:link.owner.username }} · <i class="fa-solid fa-dollar-sign me-1"></i>${{ link.tip_amount }} · <i class="fa-solid fa-film me-1"></i>{{ link.clip_count|default:link.clips.count }}
+                  </div>
+                  {% if link.notes %}<div class="text-muted small mt-1">{{ link.notes }}</div>{% endif %}
                 </div>
-                {% if link.notes %}<div class="text-muted small mt-1">{{ link.notes }}</div>{% endif %}
               </div>
               <div>
                 <div class="d-flex align-items-center gap-2">

@@ -18,6 +18,15 @@ class MyStreamLinksView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return StreamLink.objects.filter(owner=self.request.user)
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        try:
+            for link in ctx.get('links') or []:
+                link.refresh_youtube_cache()
+        except Exception:
+            pass
+        return ctx
+
 
 class StreamLinkCreateView(LoginRequiredMixin, CreateView):
     model = StreamLink
@@ -77,6 +86,15 @@ class PublicActiveLinksView(ListView):
         if not getattr(self.request, 'user', None) or not self.request.user.is_authenticated:
             return qs.none()
         return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        try:
+            for link in ctx.get('active_links') or []:
+                link.refresh_youtube_cache()
+        except Exception:
+            pass
+        return ctx
 
 
 class PublicStreamDetailView(DetailView):

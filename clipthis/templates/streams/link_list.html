@@ -22,7 +22,19 @@
         <tbody>
           {% for link in links %}
             <tr>
-              <td><a href="{{ link.url }}" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square me-1"></i>{{ link.url }}</a></td>
+              <td>
+                <div class="d-flex align-items-start gap-2">
+                  {% if link.yt_thumbnail %}
+                    <img src="{{ link.yt_thumbnail }}" alt="Thumbnail" style="width:80px;height:auto;border-radius:4px;" loading="lazy" />
+                  {% endif %}
+                  <div>
+                    <a href="{{ link.url }}" target="_blank" rel="noopener">
+                      {% if link.yt_title %}{{ link.yt_title }}{% else %}<i class="fa-solid fa-up-right-from-square me-1"></i>{{ link.url }}{% endif %}
+                    </a>
+                    {% if link.yt_channel %}<div class="text-muted small">{{ link.yt_channel }}</div>{% endif %}
+                  </div>
+                </div>
+              </td>
               <td>
                 {% if link.active %}
                   <span class="badge text-bg-success"><i class="fa-solid fa-check me-1"></i>Active</span>

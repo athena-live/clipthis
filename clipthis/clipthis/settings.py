@@ -284,3 +284,10 @@ if COOKIE_DOMAIN:
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+# YouTube Data API
+YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY', '')
+try:
+    YOUTUBE_CACHE_HOURS = int(os.getenv('YOUTUBE_CACHE_HOURS', '24'))
+except Exception:
+    YOUTUBE_CACHE_HOURS = 24
