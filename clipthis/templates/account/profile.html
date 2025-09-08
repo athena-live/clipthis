@@ -50,7 +50,20 @@
           </div>
         {% endif %}
       {% endwith %}
+
+      <hr style="margin:1.25rem 0;" />
+
+      <h3>Update your name</h3>
+      <form method="post" action="">
+        {% csrf_token %}
+        <label for="id_first_name">First name</label>
+        {{ form.first_name }}
+        <label for="id_last_name">Last name</label>
+        {{ form.last_name }}
+        <div style="margin-top:.75rem;">
+          <button class="btn" type="submit">Save</button>
+        </div>
+      </form>
     </div>
   </body>
   </html>
-
