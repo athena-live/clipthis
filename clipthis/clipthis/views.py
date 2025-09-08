@@ -6,6 +6,7 @@ from django.views import View
 
 from streams.forms import ProfileForm
 from streams.models import Profile, BillingTransaction, StreamLink
+from streams.models import StreamRating, ClipRating
 from django.conf import settings
 from django.contrib import messages
 
@@ -53,6 +54,8 @@ class ProfileView(LoginRequiredMixin, View):
         profile_form = ProfileForm(instance=profile)
         used = StreamLink.objects.filter(owner=user).count()
         limit = Profile.plan_limit(profile.plan)
+        vote_used = StreamRating.objects.filter(user=user).count() + ClipRating.objects.filter(user=user).count()
+        vote_limit_val = Profile.vote_limit(profile.plan)
         return render(
             request,
             self.template_name,
@@ -62,6 +65,8 @@ class ProfileView(LoginRequiredMixin, View):
                 "profile": profile,
                 "plan_limit": limit,
                 "plan_used": used,
+                "vote_limit": vote_limit_val,
+                "vote_used": vote_used,
             },
         )
 
@@ -76,6 +81,8 @@ class ProfileView(LoginRequiredMixin, View):
             return redirect(self.success_url)
         used = StreamLink.objects.filter(owner=user).count()
         limit = Profile.plan_limit(profile.plan)
+        vote_used = StreamRating.objects.filter(user=user).count() + ClipRating.objects.filter(user=user).count()
+        vote_limit_val = Profile.vote_limit(profile.plan)
         return render(
             request,
             self.template_name,
@@ -85,6 +92,8 @@ class ProfileView(LoginRequiredMixin, View):
                 "profile": profile,
                 "plan_limit": limit,
                 "plan_used": used,
+                "vote_limit": vote_limit_val,
+                "vote_used": vote_used,
             },
         )
 

@@ -9,7 +9,8 @@
               <div>
                 <div class="text-uppercase text-muted small">Current plan</div>
                 <div class="h5 mb-1">{{ profile.plan|capfirst }}</div>
-                <div class="text-muted small">Usage: {{ plan_used }} / {{ plan_limit }}</div>
+                <div class="text-muted small">Links: {{ plan_used }} / {{ plan_limit }}</div>
+                <div class="text-muted small">Votes: {{ vote_used }} / {{ vote_limit }}</div>
               </div>
               <div class="d-flex flex-wrap gap-2">
                 <form method="post" action="{% url 'billing_select' 'free' %}">
