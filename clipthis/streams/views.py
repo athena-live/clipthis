@@ -60,6 +60,7 @@ class PublicActiveLinksView(ListView):
     model = StreamLink
     template_name = 'home.html'
     context_object_name = 'active_links'
+    paginate_by = 12
 
     def get_queryset(self):
         qs = (
