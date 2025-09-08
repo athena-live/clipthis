@@ -3,11 +3,24 @@
 {% block content %}
   <div class="mb-3">
     <h1 class="h4">Stream Request</h1>
-    <div>
-      <a class="link-underline link-underline-opacity-0" href="{{ stream.url }}" target="_blank" rel="noopener">{{ stream.url }}</a>
+    <div class="d-flex gap-3 align-items-start mt-2">
+      {% if stream.yt_thumbnail %}
+        <a href="{{ stream.url }}" target="_blank" rel="noopener"><img src="{{ stream.yt_thumbnail }}" alt="Thumbnail" style="width:140px;height:auto;border-radius:6px;" loading="lazy" /></a>
+      {% endif %}
+      <div>
+        <div>
+          <a class="link-underline link-underline-opacity-0" href="{{ stream.url }}" target="_blank" rel="noopener">
+            {% if stream.yt_title %}{{ stream.yt_title }}{% else %}{{ stream.url }}{% endif %}
+          </a>
+        </div>
+        <div class="text-muted small">
+          {% if stream.yt_channel %}{{ stream.yt_channel }} • {% endif %}
+          by <a href="{% url 'streams:user_profile' stream.owner.id %}">{{ stream.owner.get_full_name|default:stream.owner.username }}</a>
+          · tip: ${{ stream.tip_amount }}
+        </div>
+        {% if stream.notes %}<div class="text-body-secondary mt-2">{{ stream.notes }}</div>{% endif %}
+      </div>
     </div>
-    <div class="text-muted">by <a href="{% url 'streams:user_profile' stream.owner.id %}">{{ stream.owner.get_full_name|default:stream.owner.username }}</a> · tip: ${{ stream.tip_amount }}</div>
-    {% if stream.notes %}<p class="mt-2">{{ stream.notes }}</p>{% endif %}
     <div class="mt-2">
       {% if request.user.is_authenticated %}
         <form class="d-inline" method="post" action="{% url 'streams:rate_stream' stream.pk %}">

@@ -123,6 +123,11 @@ class PublicStreamDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        # Refresh YouTube cache for the stream itself
+        try:
+            self.object.refresh_youtube_cache()
+        except Exception:
+            pass
         ctx['clips'] = (
             self.object.clips
             .select_related('submitter')
