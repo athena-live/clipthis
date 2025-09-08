@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Authentication Error • ClipThis{% endblock %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="alert alert-danger" role="alert">
+        We could not sign you in with your social account.
+      </div>
+      <a class="btn btn-primary" href="/accounts/login/"><i class="fa-solid fa-right-to-bracket me-1"></i> Try again</a>
+      <a class="btn btn-outline-secondary ms-2" href="/faq/"><i class="fa-solid fa-circle-question me-1"></i> Read the Q&amp;A / FAQ</a>
+    </div>
+  </div>
+{% endblock %}
+

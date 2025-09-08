@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% block title %}Continue with {{ provider.name }} • ClipThis{% endblock %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-7">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <i class="fa-brands fa-google me-2 fs-4"></i>
+            <h1 class="h4 m-0">Continue with {{ provider.name }}</h1>
+          </div>
+          <p class="text-body-secondary mb-3">
+            You are about to sign {% if process == 'connect' %}connect{% else %}in{% endif %} using your {{ provider.name }} account.
+          </p>
+
+          <div class="d-flex gap-2">
+            <a class="btn btn-primary" href="{% provider_login_url provider.id process=process %}">
+              <i class="fa-brands fa-google me-1"></i> Continue with {{ provider.name }}
+            </a>
+            <a class="btn btn-outline-secondary" href="/accounts/login/">
+              <i class="fa-solid fa-arrow-left me-1"></i> Back
+            </a>
+          </div>
+
+          <p class="text-body-secondary small mt-3 mb-0">You will be redirected to {{ provider.name }} to authorize and then back here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Auto-forward after a short delay for a smoother UX
+    setTimeout(function(){ window.location.href = "{% provider_login_url provider.id process=process %}"; }, 400);
+  </script>
+{% endblock %}
+

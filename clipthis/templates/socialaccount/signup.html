@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Complete Signup • ClipThis{% endblock %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-7">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h1 class="h4 mb-2">Complete your signup</h1>
+          <p class="text-body-secondary">We received details from your social account. Please confirm or fill in any required fields to finish creating your ClipThis account.</p>
+
+          <form method="post" action="{% url 'socialaccount_signup' %}">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+            {% for field in form %}
+              <div class="mb-3">
+                <label class="form-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                {{ field.as_widget|add_class:"form-control" }}
+                {% if field.errors %}
+                  <div class="text-danger small">{{ field.errors|striptags }}</div>
+                {% endif %}
+                {% if field.help_text %}
+                  <div class="form-text">{{ field.help_text }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+            <button class="btn btn-primary" type="submit"><i class="fa-solid fa-user-check me-1"></i> Create account</button>
+            <a class="btn btn-outline-secondary ms-2" href="/accounts/login/"><i class="fa-solid fa-arrow-left me-1"></i> Back</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
