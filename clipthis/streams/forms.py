@@ -36,3 +36,10 @@ class ProfileForm(forms.ModelForm):
         widgets = {
             'payment_note': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Any additional payment instructions…'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add Bootstrap classes to all widgets
+        for name, field in self.fields.items():
+            css = field.widget.attrs.get('class', '')
+            field.widget.attrs['class'] = (css + ' form-control').strip()

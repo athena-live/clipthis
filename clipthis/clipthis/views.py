@@ -34,7 +34,7 @@ class ProfileView(LoginRequiredMixin, View):
         return render(request, self.template_name, {"user_form": user_form, "profile_form": profile_form})
 
     def _user_form(self, *args, **kwargs):
-        # Simple dynamic ModelForm for first/last name only
+        # Simple dynamic ModelForm for first/last name only with Bootstrap widgets
         from django import forms
         User = get_user_model()
 
@@ -42,5 +42,9 @@ class ProfileView(LoginRequiredMixin, View):
             class Meta:
                 model = User
                 fields = ["first_name", "last_name"]
+                widgets = {
+                    "first_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "First name"}),
+                    "last_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Last name"}),
+                }
 
         return _F(*args, **kwargs)
