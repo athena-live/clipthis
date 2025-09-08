@@ -15,7 +15,11 @@
           </p>
 
           <div class="d-flex gap-2">
+            {% if process %}
             <a class="btn btn-primary" href="{% provider_login_url provider.id process=process %}">
+            {% else %}
+            <a class="btn btn-primary" href="{% provider_login_url provider.id %}">
+            {% endif %}
               <i class="fa-brands fa-google me-1"></i> Continue with {{ provider.name }}
             </a>
             <a class="btn btn-outline-secondary" href="/accounts/login/">
@@ -31,7 +35,12 @@
 
   <script>
     // Auto-forward after a short delay for a smoother UX
-    setTimeout(function(){ window.location.href = "{% provider_login_url provider.id process=process %}"; }, 400);
+    setTimeout(function(){
+      {% if process %}
+      window.location.href = "{% provider_login_url provider.id process=process %}";
+      {% else %}
+      window.location.href = "{% provider_login_url provider.id %}";
+      {% endif %}
+    }, 400);
   </script>
 {% endblock %}
-
