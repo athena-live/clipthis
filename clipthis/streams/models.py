@@ -208,7 +208,7 @@ class Profile(models.Model):
     @staticmethod
     def plan_limit(plan: str) -> int:
         limits = {
-            Profile.PLAN_FREE: 50,
+            Profile.PLAN_FREE: 5,
             Profile.PLAN_PLUS: 200,
             Profile.PLAN_PREMIUM: 500,
         }
