@@ -74,22 +74,25 @@
 
   {% if request.user.is_authenticated %}
     <form method="get" class="border rounded p-3 mb-3 bg-body-tertiary">
-      <div class="row align-items-center g-3">
-        <div class="col-12 col-md-3">
-          <label class="form-label m-0">Filter by tip amount</label>
-          <div class="text-body-secondary small">${{ filter_min_tip|floatformat:2 }} – ${{ filter_max_tip|floatformat:2 }}</div>
-        </div>
-        <div class="col-12 col-md-7">
-          <div class="d-flex align-items-center gap-2">
-            <input type="range" name="min" id="filter_min" class="form-range" min="{{ db_min_tip }}" max="{{ db_max_tip }}" step="0.01" value="{{ filter_min_tip }}" style="width:50%;">
-            <input type="range" name="max" id="filter_max" class="form-range" min="{{ db_min_tip }}" max="{{ db_max_tip }}" step="0.01" value="{{ filter_max_tip }}" style="width:50%;">
-          </div>
-        </div>
-        <div class="col-12 col-md-2 text-md-end">
-          <button class="btn btn-primary w-100" type="submit"><i class="fa-solid fa-filter me-1"></i>Filter</button>
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+        <div class="fw-semibold">Filter by tip amount</div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge text-bg-secondary" id="min_badge">${{ filter_min_tip|floatformat:2 }}</span>
+          <span>to</span>
+          <span class="badge text-bg-secondary" id="max_badge">${{ filter_max_tip|floatformat:2 }}</span>
         </div>
       </div>
-      <div class="text-body-secondary small mt-2">Range from: ${% if db_min_tip %}{{ db_min_tip|floatformat:2 }}{% else %}0.00{% endif %} to ${% if db_max_tip %}{{ db_max_tip|floatformat:2 }}{% else %}0.00{% endif %}</div>
+      <div class="range-wrap" data-db-min="{{ db_min_tip|default:0 }}" data-db-max="{{ db_max_tip|default:0 }}">
+        <div class="range-track"><div class="range-fill" id="range_fill"></div></div>
+        <div class="d-flex align-items-center gap-3 mt-2">
+          <input type="range" name="min" id="filter_min" class="form-range flex-grow-1" min="{{ db_min_tip }}" max="{{ db_max_tip }}" step="0.01" value="{{ filter_min_tip }}" aria-label="Minimum tip">
+          <input type="range" name="max" id="filter_max" class="form-range flex-grow-1" min="{{ db_min_tip }}" max="{{ db_max_tip }}" step="0.01" value="{{ filter_max_tip }}" aria-label="Maximum tip">
+        </div>
+      </div>
+      <div class="d-flex justify-content-between text-body-secondary small mt-2">
+        <div>DB range: ${% if db_min_tip %}{{ db_min_tip|floatformat:2 }}{% else %}0.00{% endif %} – ${% if db_max_tip %}{{ db_max_tip|floatformat:2 }}{% else %}0.00{% endif %}</div>
+        <button class="btn btn-primary btn-sm" type="submit"><i class="fa-solid fa-filter me-1"></i>Apply</button>
+      </div>
     </form>
 
     <h2 class="h4 mt-4"><i class="fa-solid fa-bolt me-1"></i>Active Stream Requests</h2>
@@ -200,16 +203,43 @@
     (function(){
       var minEl = document.getElementById('filter_min');
       var maxEl = document.getElementById('filter_max');
+      var minBadge = document.getElementById('min_badge');
+      var maxBadge = document.getElementById('max_badge');
+      var wrap = document.querySelector('.range-wrap');
+      var fill = document.getElementById('range_fill');
       if(!minEl || !maxEl) return;
+      var dbMin = parseFloat(wrap?.getAttribute('data-db-min') || '0');
+      var dbMax = parseFloat(wrap?.getAttribute('data-db-max') || '0');
+      var span = Math.max(dbMax - dbMin, 0.0001);
       function clamp(){
         var minv = parseFloat(minEl.value);
         var maxv = parseFloat(maxEl.value);
         if(minv > maxv){ maxEl.value = minv; }
+        if(minBadge) minBadge.textContent = '$' + parseFloat(minEl.value).toFixed(2);
+        if(maxBadge) maxBadge.textContent = '$' + parseFloat(maxEl.value).toFixed(2);
+        if(fill){
+          var leftPct = ((parseFloat(minEl.value) - dbMin) / span) * 100;
+          var rightPct = ((parseFloat(maxEl.value) - dbMin) / span) * 100;
+          leftPct = Math.min(Math.max(leftPct, 0), 100);
+          rightPct = Math.min(Math.max(rightPct, 0), 100);
+          fill.style.left = leftPct + '%';
+          fill.style.width = Math.max(rightPct - leftPct, 0) + '%';
+        }
       }
       minEl.addEventListener('input', clamp);
       maxEl.addEventListener('input', clamp);
+      clamp();
     })();
   </script>
   {% endif %}
+{% endblock %}
+
+{% block extra_head %}
+  {{ block.super }}
+  <style>
+    .range-track{ position: relative; width:100%; height: 8px; border-radius: 6px; background: var(--bs-border-color); }
+    .range-fill{ position:absolute; height:8px; border-radius:6px; background: linear-gradient(90deg, #7c3aed, #06b6d4); left:0; width:0; }
+    input.form-range{ accent-color: #7c3aed; }
+  </style>
 {% endblock %}
 {% endblock %}
