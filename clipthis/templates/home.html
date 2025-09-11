@@ -90,7 +90,7 @@
         </div>
       </div>
       <div class="d-flex justify-content-between text-body-secondary small mt-2">
-        <div>DB range: ${% if db_min_tip %}{{ db_min_tip|floatformat:2 }}{% else %}0.00{% endif %} – ${% if db_max_tip %}{{ db_max_tip|floatformat:2 }}{% else %}0.00{% endif %}</div>
+        <div>Range: ${% if db_min_tip %}{{ db_min_tip|floatformat:2 }}{% else %}0.00{% endif %} – ${% if db_max_tip %}{{ db_max_tip|floatformat:2 }}{% else %}0.00{% endif %}</div>
         <button class="btn btn-primary btn-sm" type="submit"><i class="fa-solid fa-filter me-1"></i>Apply</button>
       </div>
     </form>
