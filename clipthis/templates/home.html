@@ -212,6 +212,18 @@
       var dbMin = parseFloat(wrap?.getAttribute('data-db-min') || '0');
       var dbMax = parseFloat(wrap?.getAttribute('data-db-max') || '0');
       var span = Math.max(dbMax - dbMin, 0.0001);
+
+      function front(el){
+        minEl.classList.remove('front');
+        maxEl.classList.remove('front');
+        el.classList.add('front');
+      }
+
+      ['pointerdown','mousedown','touchstart','focus'].forEach(function(evt){
+        minEl.addEventListener(evt, function(){ front(minEl); });
+        maxEl.addEventListener(evt, function(){ front(maxEl); });
+      });
+
       function clamp(){
         var minv = parseFloat(minEl.value);
         var maxv = parseFloat(maxEl.value);
@@ -243,7 +255,12 @@
     .range-track{ position: relative; width:100%; height: 8px; border-radius: 6px; background: var(--bs-border-color); }
     .range-fill{ position:absolute; height:8px; border-radius:6px; background: linear-gradient(90deg, #7c3aed, #06b6d4); left:0; width:0; }
     .range-inputs{ position: relative; height: 0; }
-    .range-inputs input.form-range{ position: absolute; left:0; width:100%; top:-12px; background: transparent; accent-color: #7c3aed; }
+    .range-inputs input.form-range{ position: absolute; left:0; width:100%; top:-14px; background: transparent; accent-color: #7c3aed; pointer-events: none; }
+    .range-inputs input.form-range.front{ z-index: 3; }
+    .range-inputs input.form-range:not(.front){ z-index: 2; }
+    /* Enable grabbing only on the thumb so both sliders can be moved */
+    .range-inputs input.form-range::-webkit-slider-thumb{ pointer-events: auto; }
+    .range-inputs input.form-range::-moz-range-thumb{ pointer-events: auto; }
     /* Hide native track to rely on custom track */
     .range-inputs input.form-range::-webkit-slider-runnable-track{ background: transparent; }
     .range-inputs input.form-range::-moz-range-track{ background: transparent; }
