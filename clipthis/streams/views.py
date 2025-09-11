@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
 
 from .models import StreamLink, Clip, Profile, StreamRating, ClipRating
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Min, Max
 from .forms import StreamLinkForm, ClipForm
 
 
@@ -81,9 +81,39 @@ class PublicActiveLinksView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
+        base = StreamLink.objects.filter(active=True, finished=False)
+        # If user is not authenticated, do not show any active streams on the homepage.
+        if not getattr(self.request, 'user', None) or not self.request.user.is_authenticated:
+            return base.none()
+
+        # Compute min/max for tip filter from DB
+        agg = base.aggregate(min_tip=Min('tip_amount'), max_tip=Max('tip_amount'))
+        db_min = agg['min_tip'] if agg['min_tip'] is not None else 0
+        db_max = agg['max_tip'] if agg['max_tip'] is not None else 0
+
+        # Read requested filter range from query params, fallback to DB bounds
+        qmin = self.request.GET.get('min')
+        qmax = self.request.GET.get('max')
+        try:
+            fmin = float(qmin) if qmin is not None else float(db_min)
+        except Exception:
+            fmin = float(db_min)
+        try:
+            fmax = float(qmax) if qmax is not None else float(db_max)
+        except Exception:
+            fmax = float(db_max)
+        # Ensure sane order
+        if fmin > fmax:
+            fmin, fmax = fmax, fmin
+
+        self.db_min_tip = db_min
+        self.db_max_tip = db_max
+        self.filter_min = fmin
+        self.filter_max = fmax
+
         qs = (
-            StreamLink.objects
-            .filter(active=True, finished=False)
+            base
+            .filter(tip_amount__gte=self.filter_min, tip_amount__lte=self.filter_max)
             .select_related('owner')
             .annotate(
                 clip_count=Count('clips', distinct=True),
@@ -91,9 +121,6 @@ class PublicActiveLinksView(ListView):
                 down_count=Count('stream_ratings', filter=Q(stream_ratings__value=-1), distinct=True),
             )
         )
-        # If user is not authenticated, do not show any active streams on the homepage.
-        if not getattr(self.request, 'user', None) or not self.request.user.is_authenticated:
-            return qs.none()
         return qs
 
     def get_context_data(self, **kwargs):
@@ -103,6 +130,11 @@ class PublicActiveLinksView(ListView):
                 link.refresh_youtube_cache()
         except Exception:
             pass
+        # Expose min/max from DB and current filter range for the slider UI
+        ctx['db_min_tip'] = getattr(self, 'db_min_tip', 0) or 0
+        ctx['db_max_tip'] = getattr(self, 'db_max_tip', 0) or 0
+        ctx['filter_min_tip'] = getattr(self, 'filter_min', ctx['db_min_tip'])
+        ctx['filter_max_tip'] = getattr(self, 'filter_max', ctx['db_max_tip'])
         return ctx
 
 
