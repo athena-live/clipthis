@@ -83,10 +83,10 @@
         </div>
       </div>
       <div class="range-wrap" data-db-min="{{ db_min_tip|default:0 }}" data-db-max="{{ db_max_tip|default:0 }}">
-        <div class="range-track"><div class="range-fill" id="range_fill"></div></div>
-        <div class="d-flex align-items-center gap-3 mt-2">
-          <input type="range" name="min" id="filter_min" class="form-range flex-grow-1" min="{{ db_min_tip }}" max="{{ db_max_tip }}" step="0.01" value="{{ filter_min_tip }}" aria-label="Minimum tip">
-          <input type="range" name="max" id="filter_max" class="form-range flex-grow-1" min="{{ db_min_tip }}" max="{{ db_max_tip }}" step="0.01" value="{{ filter_max_tip }}" aria-label="Maximum tip">
+        <div class="range-track" id="range_track"><div class="range-fill" id="range_fill"></div></div>
+        <div class="range-inputs">
+          <input type="range" name="min" id="filter_min" class="form-range" min="{{ db_min_tip }}" max="{{ db_max_tip }}" step="0.01" value="{{ filter_min_tip }}" aria-label="Minimum tip">
+          <input type="range" name="max" id="filter_max" class="form-range" min="{{ db_min_tip }}" max="{{ db_max_tip }}" step="0.01" value="{{ filter_max_tip }}" aria-label="Maximum tip">
         </div>
       </div>
       <div class="d-flex justify-content-between text-body-secondary small mt-2">
@@ -207,6 +207,7 @@
       var maxBadge = document.getElementById('max_badge');
       var wrap = document.querySelector('.range-wrap');
       var fill = document.getElementById('range_fill');
+      var track = document.getElementById('range_track');
       if(!minEl || !maxEl) return;
       var dbMin = parseFloat(wrap?.getAttribute('data-db-min') || '0');
       var dbMax = parseFloat(wrap?.getAttribute('data-db-max') || '0');
@@ -217,17 +218,19 @@
         if(minv > maxv){ maxEl.value = minv; }
         if(minBadge) minBadge.textContent = '$' + parseFloat(minEl.value).toFixed(2);
         if(maxBadge) maxBadge.textContent = '$' + parseFloat(maxEl.value).toFixed(2);
-        if(fill){
-          var leftPct = ((parseFloat(minEl.value) - dbMin) / span) * 100;
-          var rightPct = ((parseFloat(maxEl.value) - dbMin) / span) * 100;
-          leftPct = Math.min(Math.max(leftPct, 0), 100);
-          rightPct = Math.min(Math.max(rightPct, 0), 100);
-          fill.style.left = leftPct + '%';
-          fill.style.width = Math.max(rightPct - leftPct, 0) + '%';
+        if(fill && track){
+          var w = track.getBoundingClientRect().width;
+          var leftPx = ((parseFloat(minEl.value) - dbMin) / span) * w;
+          var rightPx = ((parseFloat(maxEl.value) - dbMin) / span) * w;
+          leftPx = Math.min(Math.max(leftPx, 0), w);
+          rightPx = Math.min(Math.max(rightPx, 0), w);
+          fill.style.left = leftPx + 'px';
+          fill.style.width = Math.max(rightPx - leftPx, 0) + 'px';
         }
       }
       minEl.addEventListener('input', clamp);
       maxEl.addEventListener('input', clamp);
+      window.addEventListener('resize', clamp);
       clamp();
     })();
   </script>
@@ -239,7 +242,11 @@
   <style>
     .range-track{ position: relative; width:100%; height: 8px; border-radius: 6px; background: var(--bs-border-color); }
     .range-fill{ position:absolute; height:8px; border-radius:6px; background: linear-gradient(90deg, #7c3aed, #06b6d4); left:0; width:0; }
-    input.form-range{ accent-color: #7c3aed; }
+    .range-inputs{ position: relative; height: 0; }
+    .range-inputs input.form-range{ position: absolute; left:0; width:100%; top:-12px; background: transparent; accent-color: #7c3aed; }
+    /* Hide native track to rely on custom track */
+    .range-inputs input.form-range::-webkit-slider-runnable-track{ background: transparent; }
+    .range-inputs input.form-range::-moz-range-track{ background: transparent; }
   </style>
 {% endblock %}
 {% endblock %}
