@@ -89,7 +89,7 @@
           <button class="btn btn-primary w-100" type="submit"><i class="fa-solid fa-filter me-1"></i>Filter</button>
         </div>
       </div>
-      <div class="text-body-secondary small mt-2">Range from database: ${% if db_min_tip %}{{ db_min_tip|floatformat:2 }}{% else %}0.00{% endif %} to ${% if db_max_tip %}{{ db_max_tip|floatformat:2 }}{% else %}0.00{% endif %}</div>
+      <div class="text-body-secondary small mt-2">Range from: ${% if db_min_tip %}{{ db_min_tip|floatformat:2 }}{% else %}0.00{% endif %} to ${% if db_max_tip %}{{ db_max_tip|floatformat:2 }}{% else %}0.00{% endif %}</div>
     </form>
 
     <h2 class="h4 mt-4"><i class="fa-solid fa-bolt me-1"></i>Active Stream Requests</h2>
